@@ -90,20 +90,20 @@ object Tool {
         list.add(CardData("10", R.drawable.ic_heart, POKER_10, POKER_HEART,R.drawable.ic_heart,0f,0f,null))
         list.add(CardData("10", R.drawable.ic_spades, POKER_10, POKER_SPADES,R.drawable.ic_spades,0f,0f,null))
 
-        list.add(CardData("11", R.drawable.ic_clubs, POKER_11, POKER_CLUBS,R.drawable.ic_bodyguard,0f,0f,null))
-        list.add(CardData("11", R.drawable.ic_diamond, POKER_11, POKER_DIAMOND,R.drawable.ic_bodyguard,0f,0f,null))
-        list.add(CardData("11", R.drawable.ic_heart, POKER_11, POKER_HEART,R.drawable.ic_bodyguard,0f,0f,null))
-        list.add(CardData("11", R.drawable.ic_spades, POKER_11, POKER_SPADES,R.drawable.ic_bodyguard,0f,0f,null))
+        list.add(CardData("J", R.drawable.ic_clubs, POKER_11, POKER_CLUBS,R.drawable.ic_bodyguard,0f,0f,null))
+        list.add(CardData("J", R.drawable.ic_diamond, POKER_11, POKER_DIAMOND,R.drawable.ic_bodyguard,0f,0f,null))
+        list.add(CardData("J", R.drawable.ic_heart, POKER_11, POKER_HEART,R.drawable.ic_bodyguard,0f,0f,null))
+        list.add(CardData("J", R.drawable.ic_spades, POKER_11, POKER_SPADES,R.drawable.ic_bodyguard,0f,0f,null))
 
-        list.add(CardData("12", R.drawable.ic_clubs, POKER_12, POKER_CLUBS,R.drawable.ic_queen,0f,0f,null))
-        list.add(CardData("12", R.drawable.ic_diamond, POKER_12, POKER_DIAMOND,R.drawable.ic_queen,0f,0f,null))
-        list.add(CardData("12", R.drawable.ic_heart, POKER_12, POKER_HEART,R.drawable.ic_queen,0f,0f,null))
-        list.add(CardData("12", R.drawable.ic_spades, POKER_12, POKER_SPADES,R.drawable.ic_queen,0f,0f,null))
+        list.add(CardData("Q", R.drawable.ic_clubs, POKER_12, POKER_CLUBS,R.drawable.ic_queen,0f,0f,null))
+        list.add(CardData("Q", R.drawable.ic_diamond, POKER_12, POKER_DIAMOND,R.drawable.ic_queen,0f,0f,null))
+        list.add(CardData("Q", R.drawable.ic_heart, POKER_12, POKER_HEART,R.drawable.ic_queen,0f,0f,null))
+        list.add(CardData("Q", R.drawable.ic_spades, POKER_12, POKER_SPADES,R.drawable.ic_queen,0f,0f,null))
 
-        list.add(CardData("13", R.drawable.ic_clubs, POKER_13, POKER_CLUBS,R.drawable.ic_king,0f,0f,null))
-        list.add(CardData("13", R.drawable.ic_diamond, POKER_13, POKER_DIAMOND,R.drawable.ic_king,0f,0f,null))
-        list.add(CardData("13", R.drawable.ic_heart, POKER_13, POKER_HEART,R.drawable.ic_king,0f,0f,null))
-        list.add(CardData("13", R.drawable.ic_spades, POKER_13, POKER_SPADES,R.drawable.ic_king,0f,0f,null))
+        list.add(CardData("K", R.drawable.ic_clubs, POKER_13, POKER_CLUBS,R.drawable.ic_king,0f,0f,null))
+        list.add(CardData("K", R.drawable.ic_diamond, POKER_13, POKER_DIAMOND,R.drawable.ic_king,0f,0f,null))
+        list.add(CardData("K", R.drawable.ic_heart, POKER_13, POKER_HEART,R.drawable.ic_king,0f,0f,null))
+        list.add(CardData("K", R.drawable.ic_spades, POKER_13, POKER_SPADES,R.drawable.ic_king,0f,0f,null))
 
         return list
     }
