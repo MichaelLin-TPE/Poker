@@ -11,6 +11,39 @@
         tools:context=".MainActivity">
 
 
+        <ImageView
+            android:id="@+id/iv_user1"
+            app:layout_constraintTop_toTopOf="@id/poker_outside_bg"
+            app:layout_constraintLeft_toLeftOf="@id/poker_outside_bg"
+            android:src="@drawable/ic_boy"
+            android:layout_width="70dp"
+            android:layout_height="70dp"/>
+
+        <ImageView
+            android:id="@+id/iv_user2"
+            app:layout_constraintTop_toTopOf="@id/poker_outside_bg"
+            app:layout_constraintRight_toRightOf="@id/poker_outside_bg"
+            android:src="@drawable/ic_boy"
+            android:layout_width="70dp"
+            android:layout_height="70dp"/>
+
+        <ImageView
+            android:id="@+id/iv_user3"
+            app:layout_constraintBottom_toBottomOf="@id/poker_outside_bg"
+            app:layout_constraintRight_toRightOf="@id/poker_outside_bg"
+            android:src="@drawable/ic_boy"
+            android:layout_width="70dp"
+            android:layout_height="70dp"/>
+
+        <ImageView
+            android:id="@+id/iv_user4"
+            app:layout_constraintBottom_toBottomOf="@id/poker_outside_bg"
+            app:layout_constraintLeft_toLeftOf="@id/poker_outside_bg"
+            android:src="@drawable/ic_boy"
+            android:layout_width="70dp"
+            android:layout_height="70dp"/>
+
+
 
         <ImageView
             android:id="@+id/poker_outside_bg"

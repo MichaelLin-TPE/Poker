@@ -34,6 +34,13 @@ object Tool {
         val scale = getContext().resources.displayMetrics.density
         return (this * scale + 0.5f).toInt()
     }
+    
+    fun getCardWidth():Int{
+        return 70.convertDp()
+    }
+    fun getCardHeight():Int{
+        return 120.convertDp()
+    }
 
     fun getContext(): Context = MyApplication.instance?.applicationContext!!
 
