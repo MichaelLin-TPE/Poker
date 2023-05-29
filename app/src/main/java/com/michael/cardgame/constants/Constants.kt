@@ -9,8 +9,8 @@ object Constants {
     const val POKER_SPADES = 3
 
     //卡牌代表的值
-    const val POKER_A = 99
-    const val POKER_2 = 100
+    const val POKER_A = 1
+    const val POKER_2 = 2
     const val POKER_3 = 3
     const val POKER_4 = 4
     const val POKER_5 = 5

@@ -83,38 +83,16 @@ class MainActivity : BaseActivity() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun handleTouchListener(it: CardData) {
-        it.cardView?.setOnTouchListener(object : OnTouchListener {
-            private var initialX = 0f
-            private var initialY = 0f
-            private var initialTouchX = 0f
-            private var initialTouchY = 0f
-            override fun onTouch(v: View, event: MotionEvent): Boolean {
-                when (event.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        initialX = v.x
-                        initialY = v.y
-                        initialTouchX = event.rawX
-                        initialTouchY = event.rawY
-                        return true
-                    }
 
-                    MotionEvent.ACTION_UP -> {
-                        v.animate().x(it.targetX).y(it.targetY).setDuration(100).start()
-                        viewModel.refreshMyCardList()
-                        return true
-                    }
-                    MotionEvent.ACTION_MOVE -> {
-                        val moveX = initialX + event.rawX - initialTouchX
-                        val moveY = initialY + event.rawY - initialTouchY
-                        viewModel.setMovingCardLocationX(moveX,it)
-                        Log.i("Michael","moveX : $moveX moveY : $moveY")
-                        v.animate().x(moveX).y(moveY).setDuration(0).start()
-                        return true
-                    }
-                }
-                return false
+        it.cardView?.setOnClickListener { view->
+            it.isSelected = !it.isSelected
+            if (it.isSelected){
+                it.cardView?.animate()?.y(it.targetY - 100)?.setDuration(100)?.start()
+            }else{
+                it.cardView?.animate()?.y(it.targetY)?.setDuration(100)?.start()
             }
-        })
+
+        }
     }
 
     private fun dealMyCard(it: CardData) {
@@ -198,8 +176,6 @@ class MainActivity : BaseActivity() {
             ?.y(targetY)
             ?.setDuration(100)
             ?.start()
-
-        Log.i("Poker", "plusValue : $plusValue")
     }
 
     /**

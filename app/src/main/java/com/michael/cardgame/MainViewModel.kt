@@ -6,13 +6,18 @@ import android.widget.ImageView
 import androidx.lifecycle.MutableLiveData
 import com.michael.cardgame.base.BaseViewModel
 import com.michael.cardgame.bean.CardData
+import com.michael.cardgame.constants.Constants
+import com.michael.cardgame.constants.Constants.POKER_6
+import com.michael.cardgame.constants.Constants.POKER_CLUBS
 import com.michael.cardgame.tool.Tool
 import com.michael.cardgame.tool.Tool.convertDp
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.util.Collections
 import java.util.Random
 import java.util.concurrent.TimeUnit
+import java.util.stream.Collectors
 import kotlin.math.abs
 
 class MainViewModel(private val application: Application) : BaseViewModel(application) {
@@ -166,6 +171,9 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
             dealCardIndex ++
         }else{
             dealCardIndex = 0
+            refreshMyCardList()
+
+
             for (card in myCardList){
                 handleMyCardTouchListenerLiveData.value = card
             }
@@ -201,24 +209,143 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
                 myCard.targetX = movingCardTargetX
                 switchSingleCardLiveData.value = myCard
                 switchCardIndex = index + 1
-                cardData.sid = switchCardIndex
             }
-            myCard.cardView?.bringToFront()
         }
     }
 
-    fun refreshMyCardList() {
-        for (myCard in myCardList){
-            if (myCard.sid > switchCardIndex && myCard.sid > originalSid){
-                myCard.sid = originalSid
-            }
+    private fun refreshMyCardList() {
+
+        val list = mutableListOf<CardData>()
+        list.add(CardData("3", R.drawable.ic_clubs,
+            Constants.POKER_3,
+            POKER_CLUBS,R.drawable.ic_clubs,0f,0f,null,0))
+        list.add(CardData("3", R.drawable.ic_diamond,
+            Constants.POKER_3,
+            Constants.POKER_DIAMOND,R.drawable.ic_diamond,0f,0f,null,0))
+        list.add(CardData("4", R.drawable.ic_clubs,
+            Constants.POKER_4,
+            POKER_CLUBS,R.drawable.ic_clubs,0f,0f,null,0))
+        list.add(CardData("4", R.drawable.ic_diamond,
+            Constants.POKER_4,
+            Constants.POKER_DIAMOND,R.drawable.ic_diamond,0f,0f,null,0))
+        list.add(CardData("4", R.drawable.ic_heart,
+            Constants.POKER_4,
+            Constants.POKER_HEART,R.drawable.ic_heart,0f,0f,null,0))
+        list.add(CardData("4", R.drawable.ic_spades,
+            Constants.POKER_4,
+            Constants.POKER_SPADES,R.drawable.ic_spades,0f,0f,null,0))
+        list.add(CardData("6", R.drawable.ic_clubs,
+            POKER_6,
+            POKER_CLUBS,R.drawable.ic_clubs,0f,0f,null,0))
+        list.add(CardData("5", R.drawable.ic_clubs,
+            Constants.POKER_5,
+            POKER_CLUBS,R.drawable.ic_clubs,0f,0f,null,0))
+        list.add(CardData("5", R.drawable.ic_diamond,
+            Constants.POKER_5,
+            Constants.POKER_DIAMOND,R.drawable.ic_diamond,0f,0f,null,0))
+        list.add(CardData("7", R.drawable.ic_clubs,
+            Constants.POKER_7, POKER_CLUBS,R.drawable.ic_clubs,0f,0f,null,0))
+        list.add(CardData("7", R.drawable.ic_diamond,
+            Constants.POKER_7,
+            Constants.POKER_DIAMOND,R.drawable.ic_diamond,0f,0f,null,0))
+        list.add(CardData("7", R.drawable.ic_heart,
+            Constants.POKER_7,
+            Constants.POKER_HEART,R.drawable.ic_heart,0f,0f,null,0))
+        list.add(CardData("7", R.drawable.ic_spades,
+            Constants.POKER_7,
+            Constants.POKER_SPADES,R.drawable.ic_spades,0f,0f,null,0))
+
+        val cardList = list.toMutableList()
+        Collections.sort(cardList, Comparator { o1, o2 ->
+            o1.cardValue - o2.cardValue
+        })
+        for (data in cardList){
+            Log.i("Poker","card value : "+data.cardValue)
         }
-        for (index in 0..12){
-            for (myCard in myCardList){
-                if (myCard.sid == index +1){
-                    myCard.cardView?.bringToFront()
+
+        //尋找同花順
+        val straightFlushList = mutableListOf<CardData>()
+        for (card in cardList){
+            if (straightFlushList.isEmpty()){
+                straightFlushList.add(card)
+            }
+            val straightData = straightFlushList[straightFlushList.size - 1]
+            var isAddData = false
+            for (card2 in cardList){
+                if (straightData.cardValue + 1 == card2.cardValue && straightData.cardType == card2.cardType){
+                    straightFlushList.add(card2)
+                    isAddData = true
                 }
             }
+            if (!isAddData){
+                straightFlushList.clear()
+            }
+            if (straightFlushList.size == 5){
+                break
+            }
+        }
+        for (data in straightFlushList){
+            Log.i("Poker","straightFlushList value : ${data.cardValue} type : ${data.cardType}")
+        }
+
+        countLeftCards(cardList,straightFlushList)
+
+        //尋找鐵支
+        val fourOfKindList = mutableListOf<CardData>()
+        val numberExistList = mutableListOf<Int>()
+        for (card in cardList){
+            val number = card.cardValue
+            val type = card.cardType
+            val numberList = mutableListOf<CardData>()
+            for (card2 in cardList){
+                if (numberExistList.isEmpty()){
+                    if (number == card2.cardValue && type != card2.cardValue){
+                        numberList.add(card2)
+                    }
+                }
+                if (numberExistList.isNotEmpty()){
+                    var isFoundSameNumber = false
+                    for (existNum in numberExistList){
+                        if (number == existNum){
+                            isFoundSameNumber = true
+                        }
+                    }
+                    if (number == card2.cardValue && type != card2.cardValue && !isFoundSameNumber){
+                        numberList.add(card2)
+                    }
+                }
+            }
+            if (numberList.size == 4){
+                numberExistList.add(numberList[0].cardValue)
+                fourOfKindList.addAll(numberList)
+            }
+        }
+        for (data in fourOfKindList){
+            Log.i("Poker"," fourOfKindList value : ${data.cardValue} type : ${data.cardType}")
+        }
+        countLeftCards(cardList,fourOfKindList)
+
+
+
+    }
+
+    private fun countLeftCards(
+        cardList: MutableList<CardData>,
+        currentList: MutableList<CardData>
+    ) {
+        val iterator = cardList.iterator()
+        while (iterator.hasNext()){
+            val data = iterator.next()
+            for (straight in currentList){
+                if (data.cardValue == straight.cardValue && data.cardType == straight.cardType){
+                    iterator.remove()
+                    break
+                }
+            }
+        }
+        Log.i("Poker","cardList剩餘 ${cardList.size} 張")
+        for (data in cardList){
+            Log.i("Poker","left card value : "+data.cardValue + " type : ${data.cardType}")
         }
     }
 

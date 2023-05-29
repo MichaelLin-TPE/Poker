@@ -11,5 +11,6 @@ data class CardData(
     var targetX: Float,
     var targetY: Float,
     var cardView: View?,
-    var sid:Int
+    var sid:Int,
+    var isSelected:Boolean = false
 )
