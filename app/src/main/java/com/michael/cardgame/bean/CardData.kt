@@ -10,5 +10,6 @@ data class CardData(
     val centerImage: Int,
     var targetX: Float,
     var targetY: Float,
-    var cardView: View?
+    var cardView: View?,
+    var sid:Int
 )

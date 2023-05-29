@@ -150,6 +150,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
             val cardData = allCardList[index]
             cardData.targetX = startX + 30.convertDp() * index
             cardData.targetY = startY.toFloat()
+            cardData.sid = index + 1
             myCardList.add(cardData)
         }
 
@@ -189,21 +190,36 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
     fun dealMyNextCard() {
         dealCard()
     }
-
+    private var switchCardIndex = 0
+    private var originalSid = 0
     fun setMovingCardLocationX(moveX: Float, cardData: CardData) {
-        for (myCard in myCardList){
+        for ((index,myCard) in myCardList.withIndex()){
             if (abs((moveX - myCard.targetX).toInt()) <= 10){
                 val movingCardTargetX = cardData.targetX
+                originalSid = cardData.sid
                 cardData.targetX = myCard.targetX
                 myCard.targetX = movingCardTargetX
                 switchSingleCardLiveData.value = myCard
+                switchCardIndex = index + 1
+                cardData.sid = switchCardIndex
             }
             myCard.cardView?.bringToFront()
         }
     }
 
     fun refreshMyCardList() {
-
+        for (myCard in myCardList){
+            if (myCard.sid > switchCardIndex && myCard.sid > originalSid){
+                myCard.sid = originalSid
+            }
+        }
+        for (index in 0..12){
+            for (myCard in myCardList){
+                if (myCard.sid == index +1){
+                    myCard.cardView?.bringToFront()
+                }
+            }
+        }
     }
 
 
