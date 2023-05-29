@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.os.Build
 import android.util.DisplayMetrics
+import android.view.WindowInsets
 import android.view.WindowMetrics
 import android.widget.Toast
 import com.michael.cardgame.R
@@ -36,10 +37,10 @@ object Tool {
     }
     
     fun getCardWidth():Int{
-        return 70.convertDp()
+        return 60.convertDp()
     }
     fun getCardHeight():Int{
-        return 120.convertDp()
+        return 110.convertDp()
     }
 
     fun getContext(): Context = MyApplication.instance?.applicationContext!!
@@ -134,8 +135,11 @@ object Tool {
     fun getScreenHeight(activity:Activity) : Int{
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val windowMetrics: WindowMetrics = activity.windowManager.currentWindowMetrics
+            val insets = windowMetrics.windowInsets
+                .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
+            val insetsTotal = insets.top + insets.bottom
             val bounds: Rect = windowMetrics.bounds
-            bounds.height()
+            bounds.height() - insetsTotal
         } else {
             val displayMetrics = DisplayMetrics()
             activity.windowManager.defaultDisplay.getMetrics(displayMetrics)
