@@ -37,10 +37,10 @@ object Tool {
     }
     
     fun getCardWidth():Int{
-        return 60.convertDp()
+        return 50.convertDp()
     }
     fun getCardHeight():Int{
-        return 110.convertDp()
+        return 95.convertDp()
     }
 
     fun getContext(): Context = MyApplication.instance?.applicationContext!!

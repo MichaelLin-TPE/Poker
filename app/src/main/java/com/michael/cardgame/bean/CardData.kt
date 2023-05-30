@@ -1,6 +1,7 @@
 package com.michael.cardgame.bean
 
 import android.view.View
+import java.io.Serializable
 
 data class CardData(
     val cardNumber: String,
@@ -13,4 +14,4 @@ data class CardData(
     var cardView: View?,
     var sid:Int,
     var isSelected:Boolean = false
-)
+) : Serializable

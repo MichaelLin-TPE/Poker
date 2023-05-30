@@ -8,9 +8,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.ViewTreeObserver
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
@@ -20,13 +18,15 @@ import com.michael.cardgame.base.BaseActivity
 import com.michael.cardgame.bean.CardData
 import com.michael.cardgame.databinding.ActivityMainBinding
 import com.michael.cardgame.tool.Tool
+import com.michael.cardgame.tool.Tool.convertDp
+import java.util.Random
 
 
 class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
-    private var randomSingleCard : CardData? = null
+    private var randomSingleCard: CardData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,18 +34,21 @@ class MainActivity : BaseActivity() {
         viewModel = getViewModel(MainViewModel::class.java)
 
 
-        binding.rootView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        binding.rootView.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 // 這時佈局已經完成
-                viewModel.setScreenWidthAndHeight(Tool.getScreenWidth(this@MainActivity), Tool.getScreenHeight(this@MainActivity))
+                viewModel.setScreenWidthAndHeight(
+                    Tool.getScreenWidth(this@MainActivity),
+                    (binding.pokerOutsideBg.y + binding.pokerOutsideBg.height).toInt()
+                )
                 viewModel.startToFlow()
-                val topLeftX = binding.pokerOutsideBg.x
-                val topRightX = binding.pokerOutsideBg.x + binding.pokerOutsideBg.width - binding.ivUser2.width
-                val topY = binding.pokerOutsideBg.y
-                val bottomY = binding.pokerOutsideBg.y + binding.pokerOutsideBg.height
-                val bottomRightX = binding.pokerOutsideBg.x + binding.pokerOutsideBg.width - binding.ivUser3.width
-                viewModel.setAllUserLocation(topLeftX,topRightX,bottomRightX,topY,bottomY)
-
+                val topLeftX = binding.pokerOutsideBg.x + binding.ivUser1.x + Tool.getCardWidth()
+                val topRightX = binding.pokerOutsideBg.x + binding.pokerOutsideBg.width - binding.ivUser2.width - Tool.getCardWidth() - Tool.getCardWidth()
+                val topY = binding.pokerOutsideBg.y + binding.ivUser1.y + binding.ivUser1.height
+                val bottomY = binding.pokerOutsideBg.y + binding.pokerOutsideBg.height - binding.ivUser3.height - Tool.getCardHeight()
+                val bottomRightX = binding.pokerOutsideBg.x + binding.pokerOutsideBg.width - binding.ivUser3.width - Tool.getCardWidth() - Tool.getCardWidth()
+                viewModel.setAllUserLocation(topLeftX, topRightX, bottomRightX, topY, bottomY)
                 // 可能需要移除 Listener 以避免重複調用
                 binding.rootView.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
@@ -67,56 +70,99 @@ class MainActivity : BaseActivity() {
         viewModel.moveSingleCardLiveData.observe(this) {
             moveSingleCard(it)
         }
-        viewModel.moveBackSingleCardLiveData.observe(this){
+        viewModel.moveBackSingleCardLiveData.observe(this) {
             moveBackCard(it)
         }
-        viewModel.dealCardLiveData.observe(this){
+        viewModel.dealCardLiveData.observe(this) {
             dealMyCard(it)
         }
-        viewModel.handleMyCardTouchListenerLiveData.observe(this){
+        viewModel.handleMyCardTouchListenerLiveData.observe(this) {
             handleTouchListener(it)
         }
-        viewModel.switchSingleCardLiveData.observe(this){
+        viewModel.switchSingleCardLiveData.observe(this) {
             it.cardView?.animate()?.x(it.targetX)?.setDuration(100)?.start()
+        }
+        viewModel.userCollectCardsLiveData.observe(this){
+            it.first.cardView?.animate()
+                ?.rotation(0f)
+                ?.x(getTargetX(it.second))
+                ?.y(getTargetY(it.second))
+                ?.withEndAction {
+                    Log.i("Poker","targetX : ${getTargetX(it.second)} , targetY : ${getTargetY(it.second)} width : ${binding.ivUser1.width}")
+                    it.first.targetX = getTargetX(it.second)
+                    it.first.targetY = getTargetY(it.second)
+                    it.first.cardView?.visibility = View.INVISIBLE
+                    viewModel.otherUserStartToCollectTheirCards()
+                }
+                ?.setDuration(100)
+                ?.start()
+        }
+    }
+
+    private fun getTargetY(userNum: Int): Float {
+        return when(userNum){
+            2 -> (binding.ivUser1.y + binding.ivUser1.height - 75.convertDp()) / 2
+            3 -> (binding.ivUser2.y + binding.ivUser2.height - 75.convertDp()) / 2
+            else -> (binding.ivUser3.y + binding.ivUser3.height - 75.convertDp()) / 2
+        }
+    }
+
+    private fun getTargetX(userNum: Int): Float {
+        return when(userNum){
+            2 -> (binding.ivUser1.x + binding.ivUser1.width - 40.convertDp()) / 2
+            3 -> (binding.ivUser2.x + binding.ivUser2.width - 40.convertDp()) / 2
+            else -> (binding.ivUser3.x + binding.ivUser3.width - 40.convertDp()) / 2
         }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun handleTouchListener(it: CardData) {
 
-        it.cardView?.setOnClickListener { view->
+        it.cardView?.setOnClickListener { view ->
             it.isSelected = !it.isSelected
-            if (it.isSelected){
+            if (it.isSelected) {
                 it.cardView?.animate()?.y(it.targetY - 100)?.setDuration(100)?.start()
-            }else{
+            } else {
                 it.cardView?.animate()?.y(it.targetY)?.setDuration(100)?.start()
             }
 
         }
     }
 
-    private fun dealMyCard(it: CardData) {
-        val ivCardBg = it.cardView?.findViewById<ImageView>(R.id.card_bg)
-        ivCardBg?.visibility = View.GONE
-        it.cardView?.bringToFront()
-        it.cardView?.animate()
-            ?.x(it.targetX)
-            ?.y(it.targetY)
+    private fun dealMyCard(it: Pair<CardData, Boolean>) {
+        val ivCardBg = it.first.cardView?.findViewById<ImageView>(R.id.card_bg)
+        ivCardBg?.visibility = if (it.second) View.VISIBLE else View.GONE
+        if (!it.second) {
+            it.first.cardView?.bringToFront()
+        }
+        it.first.cardView?.animate()
+            ?.x(it.first.targetX)
+            ?.y(it.first.targetY)
             ?.withEndAction {
+                if (it.second) {
+                    val layoutParams = it.first.cardView?.layoutParams
+                    layoutParams?.width = 40.convertDp()
+                    layoutParams?.height = 75.convertDp()
+                    it.first.cardView?.layoutParams = layoutParams
+                    it.first.cardView?.animate()?.rotation(Random().nextFloat() * 45)
+                        ?.setDuration(10)?.start()
+                }
                 viewModel.dealMyNextCard()
             }
-            ?.setDuration(200)
+            ?.setDuration(150)
             ?.start()
     }
 
     private fun moveBackCard(pair: Pair<Float, Float>) {
-        if (randomSingleCard == null){
+        if (randomSingleCard == null) {
             return
         }
         randomSingleCard!!.cardView?.animate()
             ?.x(pair.first)
             ?.withEndAction {
-                viewModel.readyToDealCards()
+                randomSingleCard!!.cardView?.findViewById<ImageView>(R.id.card_bg)?.visibility =
+                    View.VISIBLE
+                viewModel.readyToDealCards(randomSingleCard?.cardValue)
             }
             ?.setDuration(500)
             ?.start()
@@ -129,25 +175,29 @@ class MainActivity : BaseActivity() {
             ?.x(it.cardView?.x!! + Tool.getCardWidth())
             ?.withEndAction {
                 Handler(Looper.getMainLooper()).postDelayed({
-                    flipCard(it)
-                },1000)
+                    randomSingleCard = it
+                    viewModel.flipSingleCardComplete()
+                }, 500)
             }
             ?.setDuration(500)
             ?.start()
     }
 
+    /**
+     * 暫時不用到
+     */
     private fun flipCard(it: CardData) {
         randomSingleCard = it
         val animator = ObjectAnimator.ofFloat(it.cardView, "rotationY", 0f, 180f)
         animator.duration = 500
         animator.interpolator = AccelerateDecelerateInterpolator()
-        animator.addUpdateListener { animation->
+        animator.addUpdateListener { animation ->
             val progress = animation.animatedFraction
             val ivCardBg = it.cardView?.findViewById<ImageView>(R.id.card_bg)
-            if (ivCardBg?.visibility == View.VISIBLE){
+            if (ivCardBg?.visibility == View.VISIBLE) {
                 return@addUpdateListener
             }
-            if (progress * 100 > 50){
+            if (progress * 100 > 50) {
                 ivCardBg?.visibility = View.VISIBLE
             }
         }
@@ -174,7 +224,7 @@ class MainActivity : BaseActivity() {
                 viewModel.onCheckBringCardTogetherFinishedListener(plusValue)
             }
             ?.y(targetY)
-            ?.setDuration(100)
+            ?.setDuration(50)
             ?.start()
     }
 
