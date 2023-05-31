@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">cardgame</string>
+    <string name="show_three_of_club">梅花三先出!!</string>
 </resources>

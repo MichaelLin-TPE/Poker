@@ -11,6 +11,8 @@ import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
@@ -88,11 +90,43 @@ class MainActivity : BaseActivity() {
                 ?.x(getTargetX(it.second))
                 ?.y(getTargetY(it.second))
                 ?.withEndAction {
-                    Log.i("Poker","targetX : ${getTargetX(it.second)} , targetY : ${getTargetY(it.second)} width : ${binding.ivUser1.width}")
                     it.first.targetX = getTargetX(it.second)
                     it.first.targetY = getTargetY(it.second)
                     it.first.cardView?.visibility = View.INVISIBLE
-                    viewModel.otherUserStartToCollectTheirCards()
+                    viewModel.onCatchUserNum(it.second)
+                }
+                ?.setDuration(100)
+                ?.start()
+        }
+
+        viewModel.showInformationLiveData.observe(this){
+            binding.tvCenterInfo.alpha = 1f
+            val animation : Animation = AnimationUtils.loadAnimation(this@MainActivity,R.anim.scale_and_fade)
+            animation.setAnimationListener(object : Animation.AnimationListener{
+                override fun onAnimationStart(animation: Animation?) {
+
+                }
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    binding.tvCenterInfo.visibility = View.INVISIBLE
+                    viewModel.startPlayACard()
+                }
+
+                override fun onAnimationRepeat(animation: Animation?) {
+
+                }
+            })
+            binding.tvCenterInfo.startAnimation(animation)
+        }
+        viewModel.startShowingUserCards.observe(this){
+            it.first.cardView?.findViewById<ImageView>(R.id.card_bg)?.visibility = View.GONE
+            it.first.cardView?.visibility = View.VISIBLE
+            it.first.cardView?.animate()
+                ?.rotation(0f)
+                ?.x(it.first.targetX)
+                ?.y(it.first.targetY)
+                ?.withEndAction {
+
                 }
                 ?.setDuration(100)
                 ?.start()
@@ -101,17 +135,17 @@ class MainActivity : BaseActivity() {
 
     private fun getTargetY(userNum: Int): Float {
         return when(userNum){
-            2 -> (binding.ivUser1.y + binding.ivUser1.height - 75.convertDp()) / 2
-            3 -> (binding.ivUser2.y + binding.ivUser2.height - 75.convertDp()) / 2
-            else -> (binding.ivUser3.y + binding.ivUser3.height - 75.convertDp()) / 2
+            2 -> binding.pokerOutsideBg.y
+            3 -> binding.pokerOutsideBg.y
+            else -> binding.pokerOutsideBg.y + binding.pokerOutsideBg.height - 75.convertDp()
         }
     }
 
     private fun getTargetX(userNum: Int): Float {
         return when(userNum){
-            2 -> (binding.ivUser1.x + binding.ivUser1.width - 40.convertDp()) / 2
-            3 -> (binding.ivUser2.x + binding.ivUser2.width - 40.convertDp()) / 2
-            else -> (binding.ivUser3.x + binding.ivUser3.width - 40.convertDp()) / 2
+            2 -> binding.pokerOutsideBg.x + binding.ivUser1.width
+            3 -> binding.pokerOutsideBg.x + binding.pokerOutsideBg.width - binding.ivUser2.width
+            else -> binding.pokerOutsideBg.x + binding.pokerOutsideBg.width - binding.ivUser3.width
         }
     }
 

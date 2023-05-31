@@ -3,10 +3,10 @@ package com.michael.cardgame.constants
 object Constants {
 
     //花色
-    const val POKER_CLUBS = 0
-    const val POKER_DIAMOND = 1
-    const val POKER_HEART = 2
-    const val POKER_SPADES = 3
+    const val POKER_CLUBS = 0 //梅花
+    const val POKER_DIAMOND = 1 //方塊
+    const val POKER_HEART = 2 //愛心
+    const val POKER_SPADES = 3 //黑桃
 
     //卡牌代表的值
     const val POKER_A = 1

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.michael.cardgame.base.BaseViewModel
 import com.michael.cardgame.bean.CardData
+import com.michael.cardgame.constants.Constants.POKER_CLUBS
 import com.michael.cardgame.tool.PokerLogicTool
 import com.michael.cardgame.tool.Tool
 import com.michael.cardgame.tool.Tool.convertDp
@@ -14,6 +15,7 @@ import io.reactivex.schedulers.Schedulers
 import java.util.Collections
 import java.util.Random
 import java.util.concurrent.TimeUnit
+import kotlin.math.sin
 
 class MainViewModel(private val application: Application) : BaseViewModel(application) {
 
@@ -26,6 +28,8 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
     val handleMyCardTouchListenerLiveData = MutableLiveData<CardData>()
     val switchSingleCardLiveData = MutableLiveData<CardData>()
     val userCollectCardsLiveData = MutableLiveData<Pair<CardData,Int>>()
+    val showInformationLiveData = MutableLiveData<String>()
+    val startShowingUserCards = MutableLiveData<Pair<CardData,Int>>()
     private val allCardList = Tool.getAllCardList()
     private var screenWidth = 0
     private var screenHeight = 0
@@ -145,8 +149,12 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         setUpOtherUserCard(user2CardList,user2LocationX,user2LocationY)
         setUpOtherUserCard(user3CardList,user3LocationX,user3LocationY)
         setUpOtherUserCard(user4CardList,user4LocationX,user4LocationY)
-        refreshMyCardList()
 
+
+        refreshUsersCardList(user2CardList)
+        refreshUsersCardList(user3CardList)
+        refreshUsersCardList(user4CardList)
+        refreshMyCardList()
 
     }
 
@@ -184,18 +192,46 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
             for (card in myCardList) {
                 handleMyCardTouchListenerLiveData.value = card
             }
-            otherUserStartToCollectTheirCards()
-//            otherUserStartToCollectTheirCards(user3CardList, 3)
-//            otherUserStartToCollectTheirCards(user4CardList, 4)
+            user2Index = 0
+            user3Index = 0
+            user4Index = 0
+            user2StartToCollectCards()
+            user3StartToCollectCards()
+            user4StartToCollectCards()
         }
     }
     //其他用戶開始蒐集他們的卡片
-    fun otherUserStartToCollectTheirCards() {
-        if (dealCardIndex < user2CardList.size){
-            userCollectCardsLiveData.value = Pair(user2CardList[dealCardIndex],2)
-            dealCardIndex ++
+    private fun user2StartToCollectCards() {
+        if (user2Index < user2CardList.size){
+            userCollectCardsLiveData.value = Pair(user2CardList[user2Index],2)
+            user2Index ++
+        }else{
+            user2Index = 0
         }
     }
+    private fun user3StartToCollectCards() {
+        if (user3Index < user3CardList.size){
+            userCollectCardsLiveData.value = Pair(user3CardList[user3Index],3)
+            user3Index ++
+        }else{
+            user3Index = 0
+        }
+    }
+    private fun user4StartToCollectCards() {
+        if (user4Index < user4CardList.size){
+            userCollectCardsLiveData.value = Pair(user4CardList[user4Index],4)
+            user4Index ++
+        }else{
+            user4Index = 0
+            //走到這洗牌的流程結束
+            startGame()
+        }
+    }
+
+    private fun startGame() {
+        showInformationLiveData.value = application.getString(R.string.show_three_of_club)
+    }
+
 
     private fun addIndex() {
         if (mineFirst){
@@ -256,6 +292,39 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         dealCard()
     }
 
+    private fun refreshUsersCardList(userCardList: MutableList<CardData>){
+        val cardList = userCardList.toMutableList()
+        Collections.sort(cardList, Comparator { o1, o2 ->
+            o1.cardValue - o2.cardValue
+        })
+        //尋找同花順
+        val straightFlushList = PokerLogicTool.searchForStraightFlush(cardList)
+        //剩餘卡片張數
+        PokerLogicTool.countLeftCards(cardList, straightFlushList)
+        //尋找鐵支
+        val fourOfKindList = PokerLogicTool.searchForFourOfKind(cardList)
+        //剩餘卡片張數
+        PokerLogicTool.countLeftCards(cardList, fourOfKindList)
+        //尋找葫蘆
+        val fullHouseList = PokerLogicTool.searchForFullHouse(cardList, false)
+        //剩餘卡片張數
+        PokerLogicTool.countLeftCards(cardList, fullHouseList)
+        //尋找兔胚
+        val twoPairList = PokerLogicTool.searchTwoPair(cardList, false)
+        //剩餘卡片張數
+        PokerLogicTool.countLeftCards(cardList, twoPairList)
+
+        //整合
+        val arrangeAllCardList = mutableListOf<CardData>()
+        arrangeAllCardList.addAll(cardList)
+        arrangeAllCardList.addAll(twoPairList)
+        arrangeAllCardList.addAll(fullHouseList)
+        arrangeAllCardList.addAll(fourOfKindList)
+        arrangeAllCardList.addAll(straightFlushList)
+        userCardList.clear()
+        userCardList.addAll(arrangeAllCardList)
+    }
+
     private fun refreshMyCardList() {
         val cardList = myCardList.toMutableList()
         Collections.sort(cardList, Comparator { o1, o2 ->
@@ -270,11 +339,11 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         //剩餘卡片張數
         PokerLogicTool.countLeftCards(cardList, fourOfKindList)
         //尋找葫蘆
-        val fullHouseList = PokerLogicTool.searchForFullHouse(cardList)
+        val fullHouseList = PokerLogicTool.searchForFullHouse(cardList, false)
         //剩餘卡片張數
         PokerLogicTool.countLeftCards(cardList, fullHouseList)
         //尋找兔胚
-        val twoPairList = PokerLogicTool.searchTwoPair(cardList)
+        val twoPairList = PokerLogicTool.searchTwoPair(cardList, false)
         //剩餘卡片張數
         PokerLogicTool.countLeftCards(cardList, twoPairList)
 
@@ -302,6 +371,182 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         dealCard()
 
 
+    }
+
+    fun onCatchUserNum(userNum: Int) {
+        when (userNum) {
+            2 -> {
+                user2StartToCollectCards()
+            }
+            3 -> {
+                user3StartToCollectCards()
+            }
+            else -> {
+                user4StartToCollectCards()
+            }
+        }
+    }
+
+    fun startPlayACard() {
+        Log.i("Poker","開始出牌 尋找梅花三的玩家")
+        var isMineTure = false
+        for (card in myCardList){
+            if (card.cardValue == 3 && card.cardType == POKER_CLUBS){
+                isMineTure = true
+                break
+            }
+        }
+        if (isMineTure){
+            Log.i("Poker","由我開始出")
+            return
+        }
+        var isUser2Turn = false
+        for (card in user2CardList){
+            if (card.cardValue == 3 && card.cardType == POKER_CLUBS){
+                isUser2Turn = true
+                break
+            }
+        }
+        if (isUser2Turn){
+            Log.i("Poker","由User2開始出")
+            showUsersCard(user2CardList)
+            playCardForFirstTime(2)
+
+            return
+        }
+        var isUser3Turn = false
+        for (card in user3CardList){
+            if (card.cardValue == 3 && card.cardType == POKER_CLUBS){
+                isUser3Turn = true
+                break
+            }
+        }
+        if (isUser3Turn){
+
+            Log.i("Poker","由User3開始出")
+            showUsersCard(user3CardList)
+            playCardForFirstTime(3)
+            return
+        }
+        var isUser4Turn = false
+        for (card in user4CardList){
+            if (card.cardValue == 3 && card.cardType == POKER_CLUBS){
+                isUser4Turn = true
+                break
+            }
+        }
+        if (isUser4Turn){
+            Log.i("Poker","由User4開始出")
+            showUsersCard(user4CardList)
+            playCardForFirstTime(4)
+
+
+        }
+    }
+
+    private fun getUserCardList(userNum: Int): MutableList<CardData> {
+        return when(userNum){
+            2 ->user2CardList
+            3 ->user3CardList
+            4 ->user4CardList
+            else -> user4CardList
+        }
+    }
+
+    private fun playCardForFirstTime(userNum: Int) {
+        //尋找同花順且跟者梅花三
+        val isStraightFlushWith3Clubs = PokerLogicTool.isStraightFlushWith3Clubs(getUserCardList(userNum))
+        Log.i("Poker", "isStraightFlushWith3Clubs : $isStraightFlushWith3Clubs")
+        if (isStraightFlushWith3Clubs){
+            val straightFlushList = PokerLogicTool.searchForStraightFlush(getUserCardList(userNum))
+
+            for ((index,card) in straightFlushList.withIndex()){
+                card.targetX = getPlayCardTargetX(userNum,index)
+                card.targetY = getPlayCardTargetY(userNum,index)
+                startShowingUserCards.value = Pair(card,userNum)
+            }
+            PokerLogicTool.countLeftCards(getUserCardList(userNum),straightFlushList)
+            return
+        }
+        //尋找鐵支且跟者梅花三
+        val isFourOfKindWith3Clubs = PokerLogicTool.isFourOfKindWith3Clubs(getUserCardList(userNum))
+        Log.i("Poker", "isFourOfKindWith3Clubs : $isFourOfKindWith3Clubs")
+        if (isFourOfKindWith3Clubs){
+            val fourOfKindList = PokerLogicTool.searchForFourOfKind(getUserCardList(userNum))
+            val singleCardWithOutThree = PokerLogicTool.getMinSingleCard(getUserCardList(userNum))
+            startShowingUserCards.value = Pair(singleCardWithOutThree,userNum)
+            for ((index,card) in fourOfKindList.withIndex()){
+                if (card.cardValue == 3){
+                    card.targetX = getPlayCardTargetX(userNum,index)
+                    card.targetY = getPlayCardTargetY(userNum,index)
+                    startShowingUserCards.value = Pair(card,userNum)
+                }
+            }
+            PokerLogicTool.countLeftCards(getUserCardList(userNum),fourOfKindList)
+            return
+        }
+        //尋找葫蘆且跟者梅花三
+        val isFullHouseWith3Clubs = PokerLogicTool.isFullHouseWith3Clubs(getUserCardList(userNum))
+        Log.i("Poker", "isFullHouseWith3Clubs : $isFullHouseWith3Clubs")
+        if (isFullHouseWith3Clubs){
+            val fullHouseListWith3Clubs = PokerLogicTool.searchForFullHouse(getUserCardList(userNum),true)
+            for ((index,card) in fullHouseListWith3Clubs.withIndex()){
+                card.targetX = getPlayCardTargetX(userNum,index)
+                card.targetY = getPlayCardTargetY(userNum,index)
+                startShowingUserCards.value = Pair(card,userNum)
+            }
+            PokerLogicTool.countLeftCards(getUserCardList(userNum),fullHouseListWith3Clubs)
+            return
+        }
+        //尋找兔胚且跟者梅花三
+        val isTwoPair = PokerLogicTool.isTwoPairWith3Clubs(getUserCardList(userNum))
+        Log.i("Poker", "isTwoPair : $isTwoPair")
+        if (isTwoPair){
+            val twoPairListWith3Clubs = PokerLogicTool.searchTwoPair(getUserCardList(userNum),true)
+            for ((index,card) in twoPairListWith3Clubs.withIndex()){
+                card.targetX = getPlayCardTargetX(userNum,index)
+                card.targetY = getPlayCardTargetY(userNum,index)
+                startShowingUserCards.value = Pair(card,userNum)
+            }
+            PokerLogicTool.countLeftCards(getUserCardList(userNum),twoPairListWith3Clubs)
+            return
+        }
+        val singleCardWithThree = PokerLogicTool.getMinSingleCardOnlyThreeClub(getUserCardList(userNum))
+        Log.i("Poker", "singleCardWithThree")
+        singleCardWithThree.targetX = getPlayCardTargetX(userNum,0)
+        singleCardWithThree.targetY = getPlayCardTargetY(userNum,0)
+        startShowingUserCards.value = Pair(singleCardWithThree,userNum)
+        val list = mutableListOf<CardData>()
+        list.add(singleCardWithThree)
+        PokerLogicTool.countLeftCards(getUserCardList(userNum),list)
+        
+    }
+
+    private fun getPlayCardTargetX(userNum: Int, index: Int): Float {
+        return when(userNum){
+            2 -> user2LocationX + 40.convertDp() * index
+            3 -> user3LocationX - 40.convertDp() * index
+            else -> user4LocationX - 40.convertDp() * index
+        }
+    }
+
+    private fun getPlayCardTargetY(userNum: Int, index: Int): Float {
+        return when(userNum){
+            2 -> user2LocationY
+            3 -> user3LocationY
+            else -> user4LocationY
+        }
+    }
+
+    /**
+     * 單純把User的卡牌用Log印出來的方法
+     */
+    private fun showUsersCard(cardList: MutableList<CardData>) {
+        var log = ""
+        for (card in cardList){
+            log += "cardValue : ${card.cardValue} , 花色 : ${Tool.getFlavor(card.cardType)}\n"
+        }
+        Log.i("Poker","user cardList : \n$log")
     }
 
 

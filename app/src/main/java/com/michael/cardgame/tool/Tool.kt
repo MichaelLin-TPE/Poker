@@ -147,4 +147,14 @@ object Tool {
         }
     }
 
+    fun getFlavor(cardType: Int): String {
+        return when(cardType){
+            POKER_CLUBS-> "梅花"
+            POKER_DIAMOND -> "方塊"
+            POKER_HEART -> "愛心"
+            POKER_SPADES -> "黑桃"
+            else -> ""
+        }
+    }
+
 }
