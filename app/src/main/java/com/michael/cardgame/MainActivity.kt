@@ -41,7 +41,7 @@ class MainActivity : BaseActivity() {
             override fun onGlobalLayout() {
                 // 這時佈局已經完成
                 viewModel.setScreenWidthAndHeight(
-                    Tool.getScreenWidth(this@MainActivity),
+                    (binding.rootView.x + binding.rootView.width).toInt(),
                     (binding.pokerOutsideBg.y + binding.pokerOutsideBg.height).toInt()
                 )
                 viewModel.startToFlow()
@@ -56,7 +56,16 @@ class MainActivity : BaseActivity() {
             }
         })
         handleLiveData()
+        initView()
+    }
 
+    private fun initView() {
+        binding.tvPlayCard.setOnClickListener {
+            viewModel.onPlayMyCardClickListener()
+        }
+        binding.tvPass.setOnClickListener {
+            viewModel.onPassClickListener()
+        }
     }
 
     private fun handleLiveData() {
@@ -133,6 +142,10 @@ class MainActivity : BaseActivity() {
                 ?.setDuration(100)
                 ?.start()
         }
+        viewModel.showMinePassButtonAndPlayCardButton.observe(this){
+            binding.tvPass.visibility = it
+            binding.tvPlayCard.visibility = it
+        }
     }
 
     private fun getTargetY(userNum: Int): Float {
@@ -161,6 +174,7 @@ class MainActivity : BaseActivity() {
             } else {
                 it.cardView?.animate()?.y(it.targetY)?.setDuration(100)?.start()
             }
+            viewModel.onCatchMineSelectedCard(it)
 
         }
     }

@@ -2,6 +2,7 @@ package com.michael.cardgame
 
 import android.app.Application
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.MutableLiveData
 import com.michael.cardgame.base.BaseViewModel
 import com.michael.cardgame.bean.CardData
@@ -25,6 +26,7 @@ import io.reactivex.schedulers.Schedulers
 import java.util.Collections
 import java.util.Random
 import java.util.concurrent.TimeUnit
+import kotlin.math.min
 import kotlin.math.sin
 
 class MainViewModel(private val application: Application) : BaseViewModel(application) {
@@ -40,6 +42,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
     val userCollectCardsLiveData = MutableLiveData<Pair<CardData,Int>>()
     val showInformationLiveData = MutableLiveData<String>()
     val startShowingUserCards = MutableLiveData<Pair<CardData,Boolean>>()
+    val showMinePassButtonAndPlayCardButton = MutableLiveData<Int>()
     private val allCardList = Tool.getAllCardList()
     private var screenWidth = 0
     private var screenHeight = 0
@@ -60,7 +63,9 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
     private var currentNextUserNum = 0 //下一個換誰出
     private var currentCardType = 0 //目前出牌的組合
     private var currentPlayCardDataList = mutableListOf<CardData>() //目前所出的排組
+    private var mineSelectedCardList = mutableListOf<CardData>() //我自己選的牌組
     fun startToFlow() {
+        showMinePassButtonAndPlayCardButton.value = View.INVISIBLE
         startToShowRefreshCardAnimation()
     }
 
@@ -590,12 +595,14 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         Log.i("Poker","準備發牌 : $currentNextUserNum")
         if (currentNextUserNum == MINE){
             Log.i("Poker","輪到我了")
+            showMinePassButtonAndPlayCardButton.value = View.VISIBLE
             return
         }
 
         val cardList = searchForSpecificCard(getUserCardList(currentNextUserNum))
         if (cardList.isEmpty()){
             Log.i("Poker","user$currentNextUserNum : Pass")
+            countNextPlayer()
             return
         }
         currentPlayCardDataList.clear()
@@ -606,12 +613,15 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
             startShowingUserCards.value = Pair(card,index == cardList.size - 1)
         }
         Log.i("Poker","user$currentNextUserNum 發牌")
+        countNextPlayer()
+        Log.i("Poker","下一位輪到 : $currentNextUserNum")
+    }
+    private fun countNextPlayer(){
         if (currentNextUserNum - 1 == 0){
             currentNextUserNum = USER_4
         }else{
             currentNextUserNum --
         }
-        Log.i("Poker","下一位輪到 : $currentNextUserNum")
     }
 
     private fun searchForSpecificCard(userCardList: MutableList<CardData>): MutableList<CardData> {
@@ -630,6 +640,27 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         }
 
     }
+
+    fun onPlayMyCardClickListener() {
+        val isAbleToPlayCard = Tool.compareMyCardAndCurrentCard(mineSelectedCardList,currentPlayCardDataList)
+    }
+
+    fun onPassClickListener() {
+
+    }
+
+    fun onCatchMineSelectedCard(it: CardData) {
+        if (it.isSelected){
+            mineSelectedCardList.add(it)
+        }else{
+            mineSelectedCardList.remove(it)
+        }
+        for (card in mineSelectedCardList){
+            Log.i("Poker","cardNum : ${card.cardValue} 花色 : ${Tool.getFlavor(card.cardType)}")
+        }
+    }
+
+
 
 
 }
