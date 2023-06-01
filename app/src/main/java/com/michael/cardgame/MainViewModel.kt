@@ -39,7 +39,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
     val switchSingleCardLiveData = MutableLiveData<CardData>()
     val userCollectCardsLiveData = MutableLiveData<Pair<CardData,Int>>()
     val showInformationLiveData = MutableLiveData<String>()
-    val startShowingUserCards = MutableLiveData<Pair<CardData,Int>>()
+    val startShowingUserCards = MutableLiveData<Pair<CardData,Boolean>>()
     private val allCardList = Tool.getAllCardList()
     private var screenWidth = 0
     private var screenHeight = 0
@@ -249,25 +249,25 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
     private fun addIndex() {
         if (mineFirst){
             mineFirst = false
-            user2First = true
+            user4First = true
             myIndex ++
             return
         }
         if (user2First){
             user2First = false
-            user3First = true
+            mineFirst = true
             user2Index ++
             return
         }
         if (user3First){
             user3First = false
-            user4First = true
+            user2First = true
             user3Index ++
             return
         }
         if (user4First){
             user4First = false
-            mineFirst = true
+            user3First = true
             user4Index ++
         }
     }
@@ -479,7 +479,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
             for ((index,card) in straightFlushList.withIndex()){
                 card.targetX = getPlayCardTargetX(userNum,index)
                 card.targetY = getPlayCardTargetY(userNum,index)
-                startShowingUserCards.value = Pair(card,userNum)
+                startShowingUserCards.value = Pair(card,index == straightFlushList.size - 1)
             }
             PokerLogicTool.countLeftCards(getUserCardList(userNum),straightFlushList)
             currentPlayCardDataList.addAll(straightFlushList)
@@ -492,12 +492,12 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         if (isFourOfKindWith3Clubs){
             val fourOfKindList = PokerLogicTool.searchForFourOfKind(getUserCardList(userNum))
             val singleCardWithOutThree = PokerLogicTool.getMinSingleCard(getUserCardList(userNum))
-            startShowingUserCards.value = Pair(singleCardWithOutThree,userNum)
+            startShowingUserCards.value = Pair(singleCardWithOutThree,false)
             for ((index,card) in fourOfKindList.withIndex()){
                 if (card.cardValue == 3){
                     card.targetX = getPlayCardTargetX(userNum,index)
                     card.targetY = getPlayCardTargetY(userNum,index)
-                    startShowingUserCards.value = Pair(card,userNum)
+                    startShowingUserCards.value = Pair(card,index == fourOfKindList.size - 1)
                 }
             }
             PokerLogicTool.countLeftCards(getUserCardList(userNum),fourOfKindList)
@@ -513,7 +513,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
             for ((index,card) in fullHouseListWith3Clubs.withIndex()){
                 card.targetX = getPlayCardTargetX(userNum,index)
                 card.targetY = getPlayCardTargetY(userNum,index)
-                startShowingUserCards.value = Pair(card,userNum)
+                startShowingUserCards.value = Pair(card,index == fullHouseListWith3Clubs.size - 1)
             }
             PokerLogicTool.countLeftCards(getUserCardList(userNum),fullHouseListWith3Clubs)
             currentPlayCardDataList.addAll(fullHouseListWith3Clubs)
@@ -528,7 +528,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
             for ((index,card) in twoPairListWith3Clubs.withIndex()){
                 card.targetX = getPlayCardTargetX(userNum,index)
                 card.targetY = getPlayCardTargetY(userNum,index)
-                startShowingUserCards.value = Pair(card,userNum)
+                startShowingUserCards.value = Pair(card,index == twoPairListWith3Clubs.size - 1)
             }
             PokerLogicTool.countLeftCards(getUserCardList(userNum),twoPairListWith3Clubs)
             currentPlayCardDataList.addAll(twoPairListWith3Clubs)
@@ -539,7 +539,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         Log.i("Poker", "singleCardWithThree")
         singleCardWithThree.targetX = getPlayCardTargetX(userNum,0)
         singleCardWithThree.targetY = getPlayCardTargetY(userNum,0)
-        startShowingUserCards.value = Pair(singleCardWithThree,userNum)
+        startShowingUserCards.value = Pair(singleCardWithThree,true)
         val list = mutableListOf<CardData>()
         list.add(singleCardWithThree)
         PokerLogicTool.countLeftCards(getUserCardList(userNum),list)
@@ -603,11 +603,11 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         for ((index,card) in cardList.withIndex()){
             card.targetX = getPlayCardTargetX(currentNextUserNum,index)
             card.targetY = getPlayCardTargetY(currentNextUserNum,index)
-            startShowingUserCards.value = Pair(card,currentNextUserNum)
-            Log.i("Poker","user$currentNextUserNum 發牌")
+            startShowingUserCards.value = Pair(card,index == cardList.size - 1)
         }
+        Log.i("Poker","user$currentNextUserNum 發牌")
         if (currentNextUserNum - 1 == 0){
-            currentNextUserNum = MINE
+            currentNextUserNum = USER_4
         }else{
             currentNextUserNum --
         }
