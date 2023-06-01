@@ -126,7 +126,7 @@ class MainActivity : BaseActivity() {
                 ?.x(it.first.targetX)
                 ?.y(it.first.targetY)
                 ?.withEndAction {
-
+                    viewModel.onPlayCardComplete()
                 }
                 ?.setDuration(100)
                 ?.start()

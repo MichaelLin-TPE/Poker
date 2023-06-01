@@ -23,6 +23,22 @@ object Constants {
     const val POKER_12 = 12
     const val POKER_13 = 13
 
+    //每個人所代表的編號
+    const val MINE = 1
+    const val USER_2 = 2
+    const val USER_3 = 3
+    const val USER_4 = 4
+
+    //同花順
+    const val STRAIGHT_FLUSH = 666
+    //鐵支
+    const val FOUR_OF_KIND = 555
+    //葫蘆
+    const val FULL_HOUSE = 444
+    //一對
+    const val TWO_PAIR = 333
+    //單支
+    const val SINGLE = 222
 
 
 }

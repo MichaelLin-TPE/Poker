@@ -5,10 +5,20 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.michael.cardgame.base.BaseViewModel
 import com.michael.cardgame.bean.CardData
+import com.michael.cardgame.constants.Constants.FOUR_OF_KIND
+import com.michael.cardgame.constants.Constants.FULL_HOUSE
+import com.michael.cardgame.constants.Constants.MINE
 import com.michael.cardgame.constants.Constants.POKER_CLUBS
+import com.michael.cardgame.constants.Constants.SINGLE
+import com.michael.cardgame.constants.Constants.STRAIGHT_FLUSH
+import com.michael.cardgame.constants.Constants.TWO_PAIR
+import com.michael.cardgame.constants.Constants.USER_2
+import com.michael.cardgame.constants.Constants.USER_3
+import com.michael.cardgame.constants.Constants.USER_4
 import com.michael.cardgame.tool.PokerLogicTool
 import com.michael.cardgame.tool.Tool
 import com.michael.cardgame.tool.Tool.convertDp
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -47,6 +57,9 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
     private val user3CardList = mutableListOf<CardData>()
     private val user4CardList = mutableListOf<CardData>()
     private var dealCardNumber = 0
+    private var currentNextUserNum = 0 //下一個換誰出
+    private var currentCardType = 0 //目前出牌的組合
+    private var currentPlayCardDataList = mutableListOf<CardData>() //目前所出的排組
     fun startToFlow() {
         startToShowRefreshCardAnimation()
     }
@@ -398,6 +411,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         }
         if (isMineTure){
             Log.i("Poker","由我開始出")
+            currentNextUserNum = USER_4
             return
         }
         var isUser2Turn = false
@@ -410,8 +424,8 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         if (isUser2Turn){
             Log.i("Poker","由User2開始出")
             showUsersCard(user2CardList)
-            playCardForFirstTime(2)
-
+            playCardForFirstTime(USER_2)
+            currentNextUserNum = MINE
             return
         }
         var isUser3Turn = false
@@ -425,7 +439,8 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
 
             Log.i("Poker","由User3開始出")
             showUsersCard(user3CardList)
-            playCardForFirstTime(3)
+            playCardForFirstTime(USER_3)
+            currentNextUserNum = USER_2
             return
         }
         var isUser4Turn = false
@@ -438,8 +453,8 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         if (isUser4Turn){
             Log.i("Poker","由User4開始出")
             showUsersCard(user4CardList)
-            playCardForFirstTime(4)
-
+            playCardForFirstTime(USER_4)
+            currentNextUserNum = USER_3
 
         }
     }
@@ -454,6 +469,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
     }
 
     private fun playCardForFirstTime(userNum: Int) {
+        currentPlayCardDataList.clear()
         //尋找同花順且跟者梅花三
         val isStraightFlushWith3Clubs = PokerLogicTool.isStraightFlushWith3Clubs(getUserCardList(userNum))
         Log.i("Poker", "isStraightFlushWith3Clubs : $isStraightFlushWith3Clubs")
@@ -466,6 +482,8 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
                 startShowingUserCards.value = Pair(card,userNum)
             }
             PokerLogicTool.countLeftCards(getUserCardList(userNum),straightFlushList)
+            currentPlayCardDataList.addAll(straightFlushList)
+            currentCardType = STRAIGHT_FLUSH
             return
         }
         //尋找鐵支且跟者梅花三
@@ -483,6 +501,8 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
                 }
             }
             PokerLogicTool.countLeftCards(getUserCardList(userNum),fourOfKindList)
+            currentPlayCardDataList.addAll(fourOfKindList)
+            currentCardType = FOUR_OF_KIND
             return
         }
         //尋找葫蘆且跟者梅花三
@@ -496,6 +516,8 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
                 startShowingUserCards.value = Pair(card,userNum)
             }
             PokerLogicTool.countLeftCards(getUserCardList(userNum),fullHouseListWith3Clubs)
+            currentPlayCardDataList.addAll(fullHouseListWith3Clubs)
+            currentCardType = FULL_HOUSE
             return
         }
         //尋找兔胚且跟者梅花三
@@ -509,6 +531,8 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
                 startShowingUserCards.value = Pair(card,userNum)
             }
             PokerLogicTool.countLeftCards(getUserCardList(userNum),twoPairListWith3Clubs)
+            currentPlayCardDataList.addAll(twoPairListWith3Clubs)
+            currentCardType = TWO_PAIR
             return
         }
         val singleCardWithThree = PokerLogicTool.getMinSingleCardOnlyThreeClub(getUserCardList(userNum))
@@ -519,6 +543,8 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         val list = mutableListOf<CardData>()
         list.add(singleCardWithThree)
         PokerLogicTool.countLeftCards(getUserCardList(userNum),list)
+        currentPlayCardDataList.addAll(list)
+        currentCardType = SINGLE
         
     }
 
@@ -547,6 +573,62 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
             log += "cardValue : ${card.cardValue} , 花色 : ${Tool.getFlavor(card.cardType)}\n"
         }
         Log.i("Poker","user cardList : \n$log")
+    }
+
+    fun onPlayCardComplete() {
+        mCompositeSubscription.add(Completable.timer(200,TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+
+                otherUserPlayCard()
+
+            })
+    }
+
+    private fun otherUserPlayCard() {
+        Log.i("Poker","準備發牌 : $currentNextUserNum")
+        if (currentNextUserNum == MINE){
+            Log.i("Poker","輪到我了")
+            return
+        }
+
+        val cardList = searchForSpecificCard(getUserCardList(currentNextUserNum))
+        if (cardList.isEmpty()){
+            Log.i("Poker","user$currentNextUserNum : Pass")
+            return
+        }
+        currentPlayCardDataList.clear()
+        currentPlayCardDataList = cardList.toMutableList()
+        for ((index,card) in cardList.withIndex()){
+            card.targetX = getPlayCardTargetX(currentNextUserNum,index)
+            card.targetY = getPlayCardTargetY(currentNextUserNum,index)
+            startShowingUserCards.value = Pair(card,currentNextUserNum)
+            Log.i("Poker","user$currentNextUserNum 發牌")
+        }
+        if (currentNextUserNum - 1 == 0){
+            currentNextUserNum = MINE
+        }else{
+            currentNextUserNum --
+        }
+        Log.i("Poker","下一位輪到 : $currentNextUserNum")
+    }
+
+    private fun searchForSpecificCard(userCardList: MutableList<CardData>): MutableList<CardData> {
+        if (currentCardType == SINGLE){
+            if (PokerLogicTool.getMinSingleCardCompare(userCardList,currentPlayCardDataList) == null){
+                return mutableListOf()
+            }
+            return mutableListOf(PokerLogicTool.getMinSingleCardCompare(userCardList,currentPlayCardDataList)!!)
+        }
+
+        return when(currentCardType){
+            STRAIGHT_FLUSH -> PokerLogicTool.searchForStraightFlushCompare(userCardList,currentPlayCardDataList)
+            FOUR_OF_KIND -> PokerLogicTool.searchForFourOfKindCompare(userCardList,currentPlayCardDataList)
+            FULL_HOUSE -> PokerLogicTool.searchForFullHouseCompare(userCardList,currentPlayCardDataList)
+            else -> PokerLogicTool.searchTwoPairCompare(userCardList,currentPlayCardDataList)
+        }
+
     }
 
 
