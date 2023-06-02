@@ -22,4 +22,5 @@ abstract class BaseViewModel(private val application: Application) : AndroidView
     fun clearCompositeDisposable(){
         mCompositeSubscription.dispose()
     }
+
 }

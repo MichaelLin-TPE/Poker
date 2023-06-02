@@ -45,7 +45,7 @@ class MainActivity : BaseActivity() {
                     (binding.pokerOutsideBg.y + binding.pokerOutsideBg.height).toInt()
                 )
                 viewModel.startToFlow()
-                val topLeftX = binding.pokerOutsideBg.x + binding.ivUser1.x + Tool.getCardWidth()
+                val topLeftX = binding.pokerOutsideBg.x + binding.ivUser1.width + Tool.getCardWidth()
                 val topRightX = binding.pokerOutsideBg.x + binding.pokerOutsideBg.width - binding.ivUser2.width - Tool.getCardWidth() - Tool.getCardWidth()
                 val topY = binding.pokerOutsideBg.y + binding.ivUser1.y + binding.ivUser1.height
                 val bottomY = binding.pokerOutsideBg.y + binding.pokerOutsideBg.height - binding.ivUser3.height - Tool.getCardHeight()
@@ -130,11 +130,17 @@ class MainActivity : BaseActivity() {
         viewModel.startShowingUserCards.observe(this){
             it.first.cardView?.findViewById<ImageView>(R.id.card_bg)?.visibility = View.GONE
             it.first.cardView?.visibility = View.VISIBLE
+            it.first.cardView?.bringToFront()
             it.first.cardView?.animate()
                 ?.rotation(0f)
                 ?.x(it.first.targetX)
                 ?.y(it.first.targetY)
                 ?.withEndAction {
+                    val layoutParams = it.first.cardView?.layoutParams
+                    layoutParams?.width = 40.convertDp()
+                    layoutParams?.height = 75.convertDp()
+                    it.first.cardView?.layoutParams = layoutParams
+                    it.first.cardView?.bringToFront()
                     if (it.second){
                         viewModel.onPlayCardComplete()
                     }
@@ -146,6 +152,45 @@ class MainActivity : BaseActivity() {
             binding.tvPass.visibility = it
             binding.tvPlayCard.visibility = it
         }
+
+        viewModel.refreshMyCardsLiveData.observe(this){
+            it.cardView?.animate()
+                ?.rotation(0f)
+                ?.x(it.targetX)
+                ?.y(it.targetY)
+                ?.withEndAction {
+
+                }
+                ?.setDuration(100)
+                ?.start()
+        }
+        viewModel.bringAlreadyShowingCardTogetherLiveData.observe(this){
+            bringAlreadyShowCardTogether(it)
+        }
+
+        viewModel.showPassContentLiveData.observe(this){
+            when (it) {
+                2 -> {
+                    binding.tvUser1Pass.visibility = View.VISIBLE
+                    disableContent(binding.tvUser1Pass)
+                }
+                3 -> {
+                    binding.tvUser2Pass.visibility = View.VISIBLE
+                    disableContent(binding.tvUser2Pass)
+                }
+                else -> {
+                    binding.tvUser3Pass.visibility = View.VISIBLE
+                    disableContent(binding.tvUser3Pass)
+                }
+            }
+        }
+
+    }
+
+    private fun disableContent(tvContent: TextView) {
+        Handler(Looper.getMainLooper()).postDelayed({
+            tvContent.visibility = View.INVISIBLE
+        },1000)
     }
 
     private fun getTargetY(userNum: Int): Float {
@@ -272,6 +317,23 @@ class MainActivity : BaseActivity() {
                 cardData.cardView?.x = targetX
                 cardData.cardView?.y = targetY
                 viewModel.onCheckBringCardTogetherFinishedListener(plusValue)
+            }
+            ?.y(targetY)
+            ?.setDuration(50)
+            ?.start()
+    }
+
+    private fun bringAlreadyShowCardTogether(cardData: CardData){
+        val targetX =
+            ((Tool.getScreenWidth(this) - (Tool.getCardWidth())) / 2).toFloat()
+        val targetY =
+            ((Tool.getScreenHeight(this) - (Tool.getCardHeight())) / 2).toFloat()
+        cardData.cardView?.animate()
+            ?.rotation(Random().nextFloat() * 45)
+            ?.x(targetX)
+            ?.withEndAction {
+                cardData.cardView?.x = targetX
+                cardData.cardView?.y = targetY
             }
             ?.y(targetY)
             ?.setDuration(50)

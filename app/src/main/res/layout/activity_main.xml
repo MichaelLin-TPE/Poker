@@ -18,6 +18,18 @@
             android:src="@drawable/ic_boy"
             android:layout_width="70dp"
             android:layout_height="70dp"/>
+        <TextView
+            android:id="@+id/tv_user1_pass"
+            android:textColor="@color/white"
+            android:visibility="invisible"
+            app:layout_constraintTop_toTopOf="@id/iv_user1"
+            app:layout_constraintBottom_toBottomOf="@id/iv_user2"
+            app:layout_constraintRight_toLeftOf="@id/iv_user1"
+            android:textSize="20sp"
+            android:text="@string/pass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
 
         <ImageView
             android:id="@+id/iv_user2"
@@ -27,6 +39,18 @@
             android:layout_width="70dp"
             android:layout_height="70dp"/>
 
+        <TextView
+            android:id="@+id/tv_user2_pass"
+            android:textColor="@color/white"
+            android:visibility="invisible"
+            app:layout_constraintTop_toTopOf="@id/iv_user2"
+            app:layout_constraintBottom_toBottomOf="@id/iv_user2"
+            app:layout_constraintLeft_toRightOf="@id/iv_user2"
+            android:textSize="20sp"
+            android:text="@string/pass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
         <ImageView
             android:id="@+id/iv_user3"
             app:layout_constraintBottom_toBottomOf="@id/poker_outside_bg"
@@ -34,6 +58,18 @@
             android:src="@drawable/ic_boy"
             android:layout_width="70dp"
             android:layout_height="70dp"/>
+
+        <TextView
+            android:id="@+id/tv_user3_pass"
+            android:textColor="@color/white"
+            android:visibility="invisible"
+            app:layout_constraintTop_toTopOf="@id/iv_user3"
+            app:layout_constraintBottom_toBottomOf="@id/iv_user3"
+            app:layout_constraintLeft_toRightOf="@id/iv_user3"
+            android:textSize="20sp"
+            android:text="@string/pass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <ImageView
             android:id="@+id/iv_user4"

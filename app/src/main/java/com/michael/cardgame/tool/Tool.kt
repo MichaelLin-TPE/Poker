@@ -10,6 +10,8 @@ import android.view.WindowMetrics
 import android.widget.Toast
 import com.michael.cardgame.R
 import com.michael.cardgame.bean.CardData
+import com.michael.cardgame.constants.Constants.FOUR_OF_KIND
+import com.michael.cardgame.constants.Constants.FULL_HOUSE
 import com.michael.cardgame.constants.Constants.POKER_10
 import com.michael.cardgame.constants.Constants.POKER_11
 import com.michael.cardgame.constants.Constants.POKER_12
@@ -27,6 +29,8 @@ import com.michael.cardgame.constants.Constants.POKER_CLUBS
 import com.michael.cardgame.constants.Constants.POKER_DIAMOND
 import com.michael.cardgame.constants.Constants.POKER_HEART
 import com.michael.cardgame.constants.Constants.POKER_SPADES
+import com.michael.cardgame.constants.Constants.STRAIGHT_FLUSH
+import com.michael.cardgame.constants.Constants.TWO_PAIR
 import com.weather.sunny.application.MyApplication
 import kotlin.math.min
 
@@ -158,6 +162,15 @@ object Tool {
         }
     }
 
+    fun getCardType(currentCardType: Int): String {
+        return when(currentCardType){
+            STRAIGHT_FLUSH-> "同花順"
+            FOUR_OF_KIND -> "鐵支"
+            FULL_HOUSE -> "葫蘆"
+            TWO_PAIR -> "兔胚"
+            else -> "單張"
+        }
+    }
 
 
 }
