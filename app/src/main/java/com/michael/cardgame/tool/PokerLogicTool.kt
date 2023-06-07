@@ -4,6 +4,7 @@ import android.util.Log
 import com.michael.cardgame.bean.CardData
 import com.michael.cardgame.constants.Constants.FOUR_OF_KIND
 import com.michael.cardgame.constants.Constants.FULL_HOUSE
+import com.michael.cardgame.constants.Constants.POKER_10
 import com.michael.cardgame.constants.Constants.POKER_2
 import com.michael.cardgame.constants.Constants.POKER_A
 import com.michael.cardgame.constants.Constants.POKER_CLUBS
@@ -18,34 +19,106 @@ import kotlin.math.sin
 object PokerLogicTool {
 
     /**
-     * 尋找同花順
+     * 尋找同花順 棄用
      */
-    fun searchForStraightFlush(cardList: MutableList<CardData>): MutableList<CardData> {
+    fun searchForStraightFlushNew(cardList: MutableList<CardData>): MutableList<MutableList<CardData>> {
+        Log.i("Poker", "searchForStraightFlushNew")
+        val dataList = mutableListOf<MutableList<CardData>>()
+        val copylist = cardList.toMutableList()
+        //先找最大的同花順 為2開頭
+        val straightWith2 = findStraightFlushWithSpecialNum(copylist, POKER_2)
+        if (straightWith2.isNotEmpty()) {
+            dataList.add(straightWith2)
+        }
+        //接者找第二大的同花順
+        val straightWithA = findStraightFlushWithSpecialNum(copylist, POKER_A)
+        if (straightWithA.isNotEmpty()) {
+            dataList.add(straightWithA)
+        }
+        val straightWithNormal = findStraightFlushWithSpecialNum(copylist, -1)
+        if (straightWithNormal.isNotEmpty()) {
+            dataList.add(straightWithNormal)
+        }
+
+        return dataList
+    }
+
+    private fun findStraightFlushWithSpecialNum(
+        copylist: MutableList<CardData>,
+        num: Int
+    ): MutableList<CardData> {
         val straightFlushList = mutableListOf<CardData>()
-        for (card in cardList) {
-            if (straightFlushList.isEmpty()) {
-                straightFlushList.add(card)
-            }
-            val straightData = straightFlushList[straightFlushList.size - 1]
-            var isAddData = false
-            for (card2 in cardList) {
-                if (straightData.cardValue + 1 == card2.cardValue && straightData.cardType == card2.cardType) {
-                    straightFlushList.add(card2)
-                    isAddData = true
+        if (num == -1) {
+            for (card in copylist) {
+                if (straightFlushList.isEmpty()) {
+                    straightFlushList.add(card)
+                }
+                val straightData = straightFlushList[straightFlushList.size - 1]
+                var isAddData = false
+                for (card2 in copylist) {
+                    if (straightData.cardValue + 1 == card2.cardValue && straightData.cardType == card2.cardType) {
+                        straightFlushList.add(card2)
+                        isAddData = true
+                    }
+                }
+                if (!isAddData) {
+                    straightFlushList.clear()
+                }
+                if (straightFlushList.size == 5) {
+                    return straightFlushList
                 }
             }
-            if (!isAddData) {
-                straightFlushList.clear()
-            }
-            if (straightFlushList.size == 5) {
-                break
-            }
-        }
-        if (straightFlushList.size != 5){
             return mutableListOf()
         }
-        return straightFlushList
+        var isFoundBiggestCard = false
+        for (card in copylist) {
+            if (card.cardValue == num) {
+                isFoundBiggestCard = true
+            }
+        }
+        Log.i("Poker", "isFoundBiggestCard : $isFoundBiggestCard")
+        if (isFoundBiggestCard) {
+            var isReadyToSearch = false
+            for (card in copylist) {
+                if (num == POKER_A && card.cardValue == POKER_10) {
+                    Log.i("Poker", "找第二個最大的同花順")
+                    isReadyToSearch = true
+                } else if (card.cardValue == num && card.cardValue != POKER_10) {
+                    Log.i("Poker", "找最大的同花順")
+                    isReadyToSearch = true
+                }
+                if (isReadyToSearch) {
+                    if (straightFlushList.isEmpty()) {
+                        straightFlushList.add(card)
+                    }
+                    val straightData = straightFlushList[straightFlushList.size - 1]
+                    var isAddData = false
+                    for (card2 in copylist) {
+                        if (straightData.cardValue + 1 == 14 && num == POKER_A && card2.cardValue == POKER_A) {
+                            straightFlushList.add(card2)
+                            isAddData = true
+                            continue
+                        }
+                        if (straightData.cardValue + 1 == card2.cardValue && straightData.cardType == card2.cardType) {
+                            Log.i("Poker", "addData : ${card2.cardValue}")
+                            straightFlushList.add(card2)
+                            isAddData = true
+                        }
+                    }
+                    if (!isAddData) {
+                        Log.i("Poker", "straightFlushList.clear()")
+                        straightFlushList.clear()
+                    }
+                    if (straightFlushList.size == 5) {
+                        countLeftCards(copylist, straightFlushList)
+                        return straightFlushList
+                    }
+                }
+            }
+        }
+        return mutableListOf()
     }
+
 
     /**
      * 尋找鐵支
@@ -220,20 +293,21 @@ object PokerLogicTool {
      * 尋找同花順且跟者梅花三
      */
     fun isStraightFlushWith3Clubs(userCardList: MutableList<CardData>): Boolean {
-        val straightFlushList = searchForStraightFlush(userCardList)
+        val straightFlushList = searchForStraightFlushNew(userCardList)
         if (straightFlushList.isEmpty()) {
             Log.i("Poker", "同花順清單為空")
             return false
         }
-
         var isFound3Clubs = false
-        for (card in straightFlushList) {
-            Log.i(
-                "Poker",
-                "找到同花順 cardValue : ${card.cardValue} , cardType : ${Tool.getFlavor(card.cardType)}"
-            )
-            if (card.cardValue == 3 && card.cardType == POKER_CLUBS) {
-                isFound3Clubs = true
+        for (cardList in straightFlushList) {
+            for (card in cardList) {
+                Log.i(
+                    "Poker",
+                    "找到同花順 cardValue : ${card.cardValue} , cardType : ${Tool.getFlavor(card.cardType)}"
+                )
+                if (card.cardValue == 3 && card.cardType == POKER_CLUBS) {
+                    isFound3Clubs = true
+                }
             }
         }
         return isFound3Clubs
@@ -263,9 +337,13 @@ object PokerLogicTool {
     ): CardData {
         val cardList = userCardList.toMutableList()
         //尋找同花順
-        val straightFlushList = searchForStraightFlush(cardList)
-        //剩餘卡片張數
-        countLeftCards(cardList, straightFlushList)
+        val straightFlushList = searchForStraightFlushNew(cardList)
+        val straightIterator = straightFlushList.iterator()
+        while (straightIterator.hasNext()) {
+            val straightList = straightIterator.next()
+            //剩餘卡片張數
+            countLeftCards(cardList, straightList)
+        }
         //尋找鐵支
         val fourOfKindList = searchForFourOfKind(cardList)
         //剩餘卡片張數
@@ -297,9 +375,13 @@ object PokerLogicTool {
     ): CardData? {
         val cardList = userCardList.toMutableList()
         //尋找同花順
-        val straightFlushList = searchForStraightFlush(cardList)
-        //剩餘卡片張數
-        countLeftCards(cardList, straightFlushList)
+        val straightFlushList = searchForStraightFlushNew(cardList)
+        val straightIterator = straightFlushList.iterator()
+        while (straightIterator.hasNext()) {
+            val straightList = straightIterator.next()
+            //剩餘卡片張數
+            countLeftCards(cardList, straightList)
+        }
         //尋找鐵支
         val fourOfKindList = searchForFourOfKind(cardList)
         //剩餘卡片張數
@@ -325,7 +407,7 @@ object PokerLogicTool {
                 biggestIndex = index
                 continue
             }
-            if (biggestCardNum < card.cardValue) {
+            if (card.cardValue == POKER_2 || card.cardValue == POKER_A && biggestCardNum != POKER_2 || biggestCardNum < card.cardValue) {
                 biggestCardNum = card.cardValue
                 biggestIndex = index
             }
@@ -395,23 +477,37 @@ object PokerLogicTool {
         userCardList: MutableList<CardData>,
         currentPlayCardDataList: MutableList<CardData>
     ): MutableList<CardData> {
-        val straightFlushList = searchForStraightFlush(userCardList)
-        if (straightFlushList.isEmpty()){
+        val straightFlushList = searchForStraightFlushNew(userCardList)
+        if (straightFlushList.isEmpty()) {
             return mutableListOf()
         }
-        val userCardData = straightFlushList[0]
-        val currentCard = currentPlayCardDataList[0]
-        var isUserCardWin = false
-        if (currentCard.cardValue == POKER_2 && userCardData.cardValue != POKER_2) {
-            isUserCardWin = false
-        } else if (currentCard.cardValue == POKER_2) {
-            isUserCardWin = userCardData.cardType > currentCard.cardType
-        } else if (currentCard.cardValue > userCardData.cardValue) {
-            isUserCardWin = false
-        } else if (currentCard.cardValue == userCardData.cardValue) {
-            isUserCardWin = userCardData.cardType > currentCard.cardType
+        for (cardList in straightFlushList){
+            cardList.sortWith { o1, o2 ->
+                o1.cardValue - o2.cardValue
+            }
         }
-        return if (isUserCardWin) straightFlushList else mutableListOf()
+        currentPlayCardDataList.sortWith{ o1,o2->
+            o1.cardValue - o2.cardValue
+        }
+        val straightList = mutableListOf<CardData>()
+        var isUserCardWin = false
+        for (cardList in straightFlushList) {
+            val userCardData = cardList[0]
+            val currentCard = currentPlayCardDataList[0]
+            if (currentCard.cardValue == POKER_2 && userCardData.cardValue != POKER_2) {
+                isUserCardWin = false
+            } else if (currentCard.cardValue == POKER_2) {
+                isUserCardWin = userCardData.cardType > currentCard.cardType
+            } else if (currentCard.cardValue > userCardData.cardValue) {
+                isUserCardWin = false
+            } else if (currentCard.cardValue == userCardData.cardValue) {
+                isUserCardWin = userCardData.cardType > currentCard.cardType
+            }
+            if (isUserCardWin){
+                straightList.addAll(cardList)
+            }
+        }
+        return straightList
     }
 
     fun searchForFourOfKindCompare(
@@ -419,7 +515,7 @@ object PokerLogicTool {
         currentPlayCardDataList: MutableList<CardData>
     ): MutableList<CardData> {
         val fourOfKindList = searchForFourOfKind(userCardList)
-        if (fourOfKindList.isEmpty()){
+        if (fourOfKindList.isEmpty()) {
             return mutableListOf()
         }
         val userCardData = fourOfKindList[0]
@@ -572,7 +668,7 @@ object PokerLogicTool {
                 twoPairIndex = index
                 continue
             }
-            if (biggestTwoPairNum < list[0].cardValue) {
+            if (list[0].cardValue == POKER_2 || (list[0].cardValue == POKER_A && biggestTwoPairNum != POKER_2 || biggestTwoPairNum < list[0].cardValue)) {
                 biggestTwoPairNum = list[0].cardValue
                 twoPairIndex = index
             }
@@ -615,25 +711,30 @@ object PokerLogicTool {
         mineSelectedCardList: MutableList<CardData>,
         currentPlayCardDataList: MutableList<CardData>
     ): Boolean {
-        if (currentPlayCardDataList.isEmpty()){
+        if (currentPlayCardDataList.isEmpty()) {
             return true
         }
         mineSelectedCardList.sortWith(Comparator { o1, o2 ->
             o1.cardValue - o2.cardValue
         })
-        currentPlayCardDataList.sortWith(Comparator{o1,o2 ->
+        currentPlayCardDataList.sortWith(Comparator { o1, o2 ->
             o1.cardValue - o2.cardValue
         })
 
         //如果雙方都是同花順
-        if (isCheckStraightFlush(mineSelectedCardList) && isCheckStraightFlush(currentPlayCardDataList)) {
+        if (isCheckStraightFlush(mineSelectedCardList) && isCheckStraightFlush(
+                currentPlayCardDataList
+            )
+        ) {
             myCurrentPlayCardType = STRAIGHT_FLUSH
-            Log.i("Poker","都是同花順")
+            Log.i("Poker", "都是同花順")
             val mineLastCardNum = mineSelectedCardList[mineSelectedCardList.size - 1].cardValue
-            val userLastCardNum = currentPlayCardDataList[currentPlayCardDataList.size - 1].cardValue
+            val userLastCardNum =
+                currentPlayCardDataList[currentPlayCardDataList.size - 1].cardValue
             val mineLastCardType = mineSelectedCardList[mineSelectedCardList.size - 1].cardType
-            val userLastCardType = currentPlayCardDataList[currentPlayCardDataList.size - 1].cardType
-            if (mineLastCardNum == userLastCardNum){
+            val userLastCardType =
+                currentPlayCardDataList[currentPlayCardDataList.size - 1].cardType
+            if (mineLastCardNum == userLastCardNum) {
                 return mineLastCardType > userLastCardType
             }
             return mineLastCardNum > userLastCardNum
@@ -641,95 +742,95 @@ object PokerLogicTool {
         //如果雙方都是鐵支 那摩只會筆數字
         if (isCheckFourOfKind(mineSelectedCardList) && isCheckFourOfKind(currentPlayCardDataList)) {
             myCurrentPlayCardType = FOUR_OF_KIND
-            Log.i("Poker","都是鐵支")
+            Log.i("Poker", "都是鐵支")
             val mineCardNum = checkFourOfKindNum(mineSelectedCardList)
             val userCardNum = checkFourOfKindNum(currentPlayCardDataList)
-            if (mineCardNum == 2){
+            if (mineCardNum == 2) {
                 return true
             }
-            if (userCardNum == 2){
+            if (userCardNum == 2) {
                 return false
             }
-            if (mineCardNum == 1){
+            if (mineCardNum == 1) {
                 return true
             }
-            if (userCardNum == 1){
+            if (userCardNum == 1) {
                 return false
             }
             return mineCardNum > userCardNum
         }
-        if (mineSelectedCardList.size != currentPlayCardDataList.size){
+        if (mineSelectedCardList.size != currentPlayCardDataList.size) {
             return false
         }
 
         //如果雙方都是葫蘆 那麼只會比對數字
-        if (isCheckFullHouse(mineSelectedCardList) && isCheckFullHouse(currentPlayCardDataList)){
+        if (isCheckFullHouse(mineSelectedCardList) && isCheckFullHouse(currentPlayCardDataList)) {
             myCurrentPlayCardType = FULL_HOUSE
-            Log.i("Poker","都是葫蘆")
-            val lastMyNum =mineSelectedCardList[mineSelectedCardList.size - 1].cardValue
+            Log.i("Poker", "都是葫蘆")
+            val lastMyNum = mineSelectedCardList[mineSelectedCardList.size - 1].cardValue
             val lastUserNum = currentPlayCardDataList[currentPlayCardDataList.size - 1].cardValue
 
-            if (lastMyNum == 2){
+            if (lastMyNum == 2) {
                 return true
             }
-            if (lastUserNum == 2){
+            if (lastUserNum == 2) {
                 return false
             }
-            if (lastMyNum == 1){
+            if (lastMyNum == 1) {
                 return true
             }
-            if (lastUserNum == 1){
+            if (lastUserNum == 1) {
                 return false
             }
             return lastMyNum > lastUserNum
         }
 
         //如果雙方都是兔胚 那麼除了比對數字之外還會比對花色
-        if (isCheckTwoPair(mineSelectedCardList) && isCheckTwoPair(currentPlayCardDataList)){
+        if (isCheckTwoPair(mineSelectedCardList) && isCheckTwoPair(currentPlayCardDataList)) {
             myCurrentPlayCardType = TWO_PAIR
-            Log.i("Poker","都是兔胚")
+            Log.i("Poker", "都是兔胚")
             val lastMyNum = mineSelectedCardList[mineSelectedCardList.size - 1].cardValue
             val lastUserNum = currentPlayCardDataList[currentPlayCardDataList.size - 1].cardValue
             val lastMyType = mineSelectedCardList[mineSelectedCardList.size - 1].cardType
             val lastUserType = currentPlayCardDataList[currentPlayCardDataList.size - 1].cardType
-            if (lastMyNum == lastUserNum){
+            if (lastMyNum == lastUserNum) {
                 return lastMyType > lastUserType
             }
-            if (lastMyNum == 2){
+            if (lastMyNum == 2) {
                 return true
             }
-            if (lastUserNum == 2){
+            if (lastUserNum == 2) {
                 return false
             }
-            if (lastMyNum == 1){
+            if (lastMyNum == 1) {
                 return true
             }
-            if (lastUserNum == 1){
+            if (lastUserNum == 1) {
                 return false
             }
             return lastMyNum > lastUserNum
         }
         //判斷是否為單張
-        if (isCheckSingleCard(mineSelectedCardList) && isCheckSingleCard(currentPlayCardDataList)){
+        if (isCheckSingleCard(mineSelectedCardList) && isCheckSingleCard(currentPlayCardDataList)) {
             myCurrentPlayCardType = SINGLE
-            Log.i("Poker","都是單張")
+            Log.i("Poker", "都是單張")
             val lastMyNum = mineSelectedCardList[mineSelectedCardList.size - 1].cardValue
             val lastUserNum = currentPlayCardDataList[currentPlayCardDataList.size - 1].cardValue
             val lastMyType = mineSelectedCardList[mineSelectedCardList.size - 1].cardType
             val lastUserType = currentPlayCardDataList[currentPlayCardDataList.size - 1].cardType
-            if (lastMyNum == lastUserNum){
+            if (lastMyNum == lastUserNum) {
                 return lastMyType > lastUserType
             }
-            if (lastMyNum == 2){
+            if (lastMyNum == 2) {
                 return true
             }
-            if (lastUserNum == 2){
+            if (lastUserNum == 2) {
                 return false
             }
-            if (lastMyNum == 1){
+            if (lastMyNum == 1) {
                 return true
             }
-            if (lastUserNum == 1){
+            if (lastUserNum == 1) {
                 return false
             }
             return lastMyNum > lastUserNum
@@ -743,8 +844,8 @@ object PokerLogicTool {
         return cardList.size == 1
     }
 
-    private fun isCheckTwoPair(cardList : MutableList<CardData>): Boolean {
-        if (cardList.size != 2){
+    private fun isCheckTwoPair(cardList: MutableList<CardData>): Boolean {
+        if (cardList.size != 2) {
             return false
         }
         val firstNum = cardList[0].cardValue
@@ -753,7 +854,7 @@ object PokerLogicTool {
     }
 
     private fun isCheckFullHouse(cardList: MutableList<CardData>): Boolean {
-        if (cardList.size != 5){
+        if (cardList.size != 5) {
             return false
         }
         val firstNum = cardList[0].cardValue
@@ -775,8 +876,8 @@ object PokerLogicTool {
         for ((index, card) in cardList.withIndex()) {
             for (position in index + 1 until cardList.size) {
                 val cardData = cardList[position]
-                if (cardData.cardValue == 1 && card.cardValue == 13){
-                    collectCount ++
+                if (cardData.cardValue == 1 && card.cardValue == 13) {
+                    collectCount++
                     continue
                 }
                 if (cardData.cardValue > card.cardValue && cardData.cardValue - card.cardValue == 1 && cardData.cardType == card.cardType) {
@@ -831,22 +932,22 @@ object PokerLogicTool {
     }
 
     fun checkCardsType(mineSelectedCardList: MutableList<CardData>): Int {
-        if (mineSelectedCardList.size > 5){
+        if (mineSelectedCardList.size > 5) {
             return -1
         }
-        if (isCheckStraightFlush(mineSelectedCardList)){
+        if (isCheckStraightFlush(mineSelectedCardList)) {
             return STRAIGHT_FLUSH
         }
-        if (isCheckFourOfKind(mineSelectedCardList)){
+        if (isCheckFourOfKind(mineSelectedCardList)) {
             return FOUR_OF_KIND
         }
-        if (isCheckFullHouse(mineSelectedCardList)){
+        if (isCheckFullHouse(mineSelectedCardList)) {
             return FULL_HOUSE
         }
-        if (isCheckTwoPair(mineSelectedCardList)){
+        if (isCheckTwoPair(mineSelectedCardList)) {
             return TWO_PAIR
         }
-        if (isCheckSingleCard(mineSelectedCardList)){
+        if (isCheckSingleCard(mineSelectedCardList)) {
             return SINGLE
         }
         return -1
@@ -855,18 +956,18 @@ object PokerLogicTool {
     fun playTwoPair(userCardList: MutableList<CardData>): MutableList<CardData> {
         val cardList = userCardList.toMutableList()
         val twoPairLists = searchForSpecificCard(cardList, 2)
-        if (twoPairLists.isEmpty()){
+        if (twoPairLists.isEmpty()) {
             return mutableListOf()
         }
         var minNum = 0
         var position = 0
-        for ((index, pairList) in twoPairLists.withIndex()){
-            if (minNum == 0){
+        for ((index, pairList) in twoPairLists.withIndex()) {
+            if (minNum == 0) {
                 minNum = pairList[0].cardValue
                 position = index
                 continue
             }
-            if (minNum > pairList[0].cardValue){
+            if (minNum > pairList[0].cardValue) {
                 minNum = pairList[0].cardValue
                 position = index
             }

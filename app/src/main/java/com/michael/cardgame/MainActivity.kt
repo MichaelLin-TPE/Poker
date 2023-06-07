@@ -185,6 +185,33 @@ class MainActivity : BaseActivity() {
             }
         }
 
+        viewModel.bringAllSelectedCardLiveData.observe(this){
+            it.cardView?.animate()?.x(it.targetX)?.setDuration(100)?.start()
+        }
+
+        viewModel.showUserLeftCardLiveData.observe(this){
+
+            val leftCardCount = "手牌剩餘${it.first}張"
+            when (it.second){
+                1 ->{
+                    binding.tvUser4Info.text = leftCardCount
+                    binding.tvUser4Info.visibility = View.VISIBLE
+                }
+                2 ->{
+                    binding.tvUser1Info.text = leftCardCount
+                    binding.tvUser1Info.visibility = View.VISIBLE
+                }
+                3 ->{
+                    binding.tvUser2Info.text = leftCardCount
+                    binding.tvUser2Info.visibility = View.VISIBLE
+                }
+                else ->{
+                    binding.tvUser3Info.text = leftCardCount
+                    binding.tvUser3Info.visibility = View.VISIBLE
+                }
+            }
+        }
+
     }
 
     private fun disableContent(tvContent: TextView) {

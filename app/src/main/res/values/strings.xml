@@ -3,4 +3,5 @@
     <string name="show_three_of_club">梅花三先出!!</string>
     <string name="can_not_play_card">無法出牌唷,再檢查一下</string>
     <string name="pass">Pass!!</string>
+    <string name="winner">勝者</string>
 </resources>
