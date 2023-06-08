@@ -25,6 +25,9 @@ object PokerLogicTool {
         Log.i("Poker", "searchForStraightFlushNew")
         val dataList = mutableListOf<MutableList<CardData>>()
         val copylist = cardList.toMutableList()
+        cardList.sortWith{ o1,o2->
+            o1.cardValue - o2.cardValue
+        }
         //先找最大的同花順 為2開頭
         val straightWith2 = findStraightFlushWithSpecialNum(copylist, POKER_2)
         if (straightWith2.isNotEmpty()) {
@@ -83,7 +86,7 @@ object PokerLogicTool {
                 if (num == POKER_A && card.cardValue == POKER_10) {
                     Log.i("Poker", "找第二個最大的同花順")
                     isReadyToSearch = true
-                } else if (card.cardValue == num && card.cardValue != POKER_10) {
+                } else if (card.cardValue == POKER_2 && card.cardValue != POKER_10) {
                     Log.i("Poker", "找最大的同花順")
                     isReadyToSearch = true
                 }
@@ -518,6 +521,13 @@ object PokerLogicTool {
         if (fourOfKindList.isEmpty()) {
             return mutableListOf()
         }
+        fourOfKindList.sortWith{ o1,o2->
+            o1.cardValue - o2.cardValue
+        }
+        currentPlayCardDataList.sortWith{ o1,o2->
+            o1.cardValue - o2.cardValue
+        }
+
         val userCardData = fourOfKindList[0]
         val currentCard = currentPlayCardDataList[0]
 
@@ -556,6 +566,7 @@ object PokerLogicTool {
             Log.i("Poker", "有問題 葫蘆並沒有滿五張")
             return mutableListOf()
         }
+
         val lastUserCardNum = fullHouseList[fullHouseList.size - 1].cardValue
         val lastCurrentCardNum = currentPlayCardDataList[currentPlayCardDataList.size - 1].cardValue
 

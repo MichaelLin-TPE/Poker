@@ -128,24 +128,23 @@ class MainActivity : BaseActivity() {
             binding.tvCenterInfo.startAnimation(animation)
         }
         viewModel.startShowingUserCards.observe(this){
+            Log.i("Poker","isFinished : ${it.second}")
             it.first.cardView?.findViewById<ImageView>(R.id.card_bg)?.visibility = View.GONE
             it.first.cardView?.visibility = View.VISIBLE
             it.first.cardView?.bringToFront()
             it.first.cardView?.animate()
-                ?.rotation(0f)
                 ?.x(it.first.targetX)
                 ?.y(it.first.targetY)
                 ?.withEndAction {
-                    val layoutParams = it.first.cardView?.layoutParams
-                    layoutParams?.width = 40.convertDp()
-                    layoutParams?.height = 75.convertDp()
-                    it.first.cardView?.layoutParams = layoutParams
-                    it.first.cardView?.bringToFront()
+                    it.first.cardView?.x = it.first.targetX
+                    it.first.cardView?.y = it.first.targetY
+                    Log.i("Poker","cardView X : ${it.first.cardView?.x}")
                     if (it.second){
+                        Log.i("Poker","完成出牌")
                         viewModel.onPlayCardComplete()
                     }
                 }
-                ?.setDuration(100)
+                ?.setDuration(200)
                 ?.start()
         }
         viewModel.showMinePassButtonAndPlayCardButton.observe(this){
@@ -186,7 +185,7 @@ class MainActivity : BaseActivity() {
         }
 
         viewModel.bringAllSelectedCardLiveData.observe(this){
-            it.cardView?.animate()?.x(it.targetX)?.setDuration(100)?.start()
+            it.cardView?.animate()?.y(it.targetY)?.setDuration(100)?.start()
         }
 
         viewModel.showUserLeftCardLiveData.observe(this){

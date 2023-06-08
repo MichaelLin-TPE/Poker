@@ -743,7 +743,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
     }
 
     fun onPlayCardComplete() {
-        mCompositeSubscription.add(Completable.timer(1500, TimeUnit.MILLISECONDS)
+        mCompositeSubscription.add(Completable.timer(500, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
@@ -931,10 +931,9 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         countNextPlayer()
         Log.i("Poker", "我出的手排數量 size : ${mineSelectedCardList.size}")
         for ((index, card) in mineSelectedCardList.withIndex()) {
-            val targetX = getPlayCardTargetX(2, index)
-            val targetY = getPlayCardTargetY(1, index)
-            card.targetX = targetX
-            card.targetY = targetY
+            card.targetX = getPlayCardTargetX(2, index)
+            card.targetY = getPlayCardTargetY(1, index)
+            Log.i("Poker","index == mineSelectedCardList.size - 1 , index : $index , ${index == mineSelectedCardList.size - 1}")
             startShowingUserCards.value = Pair(card, index == mineSelectedCardList.size - 1)
         }
         passCount = 0
@@ -961,6 +960,9 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
                     continue
                 }
                 val cardData = myCardList[pos]
+                if (cardData.isSelected){
+                    continue
+                }
                 cardData.targetX = cardData.targetX - 30.convertDp()
                 refreshMyCardsLiveData.value = cardData
             }
@@ -989,7 +991,10 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         onPlayCardComplete()
         showMinePassButtonAndPlayCardButton.value = View.GONE
         for (data in mineSelectedCardList) {
-            bringAllSelectedCardLiveData.value = data
+            if (data.isSelected){
+                data.isSelected = false
+                bringAllSelectedCardLiveData.value = data
+            }
         }
     }
 
