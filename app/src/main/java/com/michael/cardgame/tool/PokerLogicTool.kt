@@ -5,16 +5,15 @@ import com.michael.cardgame.bean.CardData
 import com.michael.cardgame.constants.Constants.FOUR_OF_KIND
 import com.michael.cardgame.constants.Constants.FULL_HOUSE
 import com.michael.cardgame.constants.Constants.POKER_10
+import com.michael.cardgame.constants.Constants.POKER_13
 import com.michael.cardgame.constants.Constants.POKER_2
 import com.michael.cardgame.constants.Constants.POKER_A
 import com.michael.cardgame.constants.Constants.POKER_CLUBS
 import com.michael.cardgame.constants.Constants.SINGLE
 import com.michael.cardgame.constants.Constants.STRAIGHT_FLUSH
 import com.michael.cardgame.constants.Constants.TWO_PAIR
-import java.util.Collections
 import java.util.Random
 import kotlin.math.min
-import kotlin.math.sin
 
 object PokerLogicTool {
 
@@ -497,10 +496,20 @@ object PokerLogicTool {
         for (cardList in straightFlushList) {
             val userCardData = cardList[0]
             val currentCard = currentPlayCardDataList[0]
+            val isCurrentFoundSecondBiggestCards = isFoundSecondBiggestCards(currentPlayCardDataList)
+            val isUserFoundSecondBiggestCards = isFoundSecondBiggestCards(cardList)
             if (currentCard.cardValue == POKER_2 && userCardData.cardValue != POKER_2) {
                 isUserCardWin = false
             } else if (currentCard.cardValue == POKER_2) {
                 isUserCardWin = userCardData.cardType > currentCard.cardType
+            } else if (userCardData.cardValue == POKER_2){
+                isUserCardWin = true;
+            } else if (currentCard.cardValue == userCardData.cardValue && (isCurrentFoundSecondBiggestCards && isUserFoundSecondBiggestCards)){
+                isUserCardWin = userCardData.cardType > currentCard.cardType
+            } else if (isCurrentFoundSecondBiggestCards){
+                isUserCardWin = false
+            } else if (isUserFoundSecondBiggestCards){
+                isUserCardWin = true
             } else if (currentCard.cardValue > userCardData.cardValue) {
                 isUserCardWin = false
             } else if (currentCard.cardValue == userCardData.cardValue) {
@@ -511,6 +520,20 @@ object PokerLogicTool {
             }
         }
         return straightList
+    }
+
+    private fun isFoundSecondBiggestCards(cardList: MutableList<CardData>): Boolean {
+        var isFoundA = false
+        var isFoundK = false
+        for (card in cardList){
+            if (card.cardValue == POKER_A){
+                isFoundA = true
+            }
+            if (card.cardValue == POKER_13){
+                isFoundK = true
+            }
+        }
+        return isFoundA && isFoundK
     }
 
     fun searchForFourOfKindCompare(
@@ -723,14 +746,29 @@ object PokerLogicTool {
         currentPlayCardDataList: MutableList<CardData>
     ): Boolean {
         if (currentPlayCardDataList.isEmpty()) {
-            return true
+            if (isCheckSingleCard(mineSelectedCardList)){
+                return true
+            }
+            if (isCheckStraightFlush(mineSelectedCardList)){
+                return true
+            }
+            if (isCheckFourOfKind(mineSelectedCardList)){
+                return true
+            }
+            if (isCheckFullHouse(mineSelectedCardList)){
+                return true
+            }
+            if (isCheckTwoPair(mineSelectedCardList)){
+                return true
+            }
+            return false
         }
-        mineSelectedCardList.sortWith(Comparator { o1, o2 ->
+        mineSelectedCardList.sortWith { o1, o2 ->
             o1.cardValue - o2.cardValue
-        })
-        currentPlayCardDataList.sortWith(Comparator { o1, o2 ->
+        }
+        currentPlayCardDataList.sortWith{ o1, o2 ->
             o1.cardValue - o2.cardValue
-        })
+        }
 
         //如果雙方都是同花順
         if (isCheckStraightFlush(mineSelectedCardList) && isCheckStraightFlush(
@@ -883,6 +921,10 @@ object PokerLogicTool {
         if (cardList.size != 5) {
             return false
         }
+        cardList.sortWith{ o1,o2->
+            o1.cardValue - o2.cardValue
+        }
+
         var collectCount = 0
         for ((index, card) in cardList.withIndex()) {
             for (position in index + 1 until cardList.size) {
