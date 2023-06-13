@@ -19,6 +19,7 @@ import androidx.databinding.DataBindingUtil
 import com.michael.cardgame.base.BaseActivity
 import com.michael.cardgame.bean.CardData
 import com.michael.cardgame.databinding.ActivityMainBinding
+import com.michael.cardgame.dialog.ConfirmDialog
 import com.michael.cardgame.tool.Tool
 import com.michael.cardgame.tool.Tool.convertDp
 import java.util.Random
@@ -149,7 +150,9 @@ class MainActivity : BaseActivity() {
         }
         viewModel.showMinePassButtonAndPlayCardButton.observe(this){
             binding.tvPass.visibility = it
+            binding.tvPass.bringToFront()
             binding.tvPlayCard.visibility = it
+            binding.tvPlayCard.bringToFront()
         }
 
         viewModel.refreshMyCardsLiveData.observe(this){
@@ -209,6 +212,11 @@ class MainActivity : BaseActivity() {
                     binding.tvUser3Info.visibility = View.VISIBLE
                 }
             }
+        }
+
+        viewModel.showConfirmDialogLiveData.observe(this){
+            val dialog = ConfirmDialog.newInstance(it)
+            dialog.show(supportFragmentManager,"dialog")
         }
 
     }

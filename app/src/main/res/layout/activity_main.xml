@@ -14,11 +14,12 @@
             android:id="@+id/iv_user1"
             android:layout_width="70dp"
             android:layout_height="70dp"
+            android:contentDescription="@null"
             android:src="@drawable/ic_boy"
             app:layout_constraintLeft_toLeftOf="@id/poker_outside_bg"
             app:layout_constraintTop_toTopOf="@id/poker_outside_bg" />
 
-        <TextView
+        <com.michael.cardgame.custom.CardTextView
             android:id="@+id/tv_user1_pass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,11 +36,12 @@
             android:id="@+id/iv_user2"
             android:layout_width="70dp"
             android:layout_height="70dp"
+            android:contentDescription="@null"
             android:src="@drawable/ic_boy"
             app:layout_constraintRight_toRightOf="@id/poker_outside_bg"
             app:layout_constraintTop_toTopOf="@id/poker_outside_bg" />
 
-        <TextView
+        <com.michael.cardgame.custom.CardTextView
             android:id="@+id/tv_user2_pass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,7 +54,7 @@
             app:layout_constraintTop_toTopOf="@id/iv_user2" />
 
 
-        <TextView
+        <com.michael.cardgame.custom.CardTextView
             android:id="@+id/tv_user3_pass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -71,6 +73,7 @@
             android:layout_height="match_parent"
             android:layout_marginHorizontal="80dp"
             android:layout_marginTop="20dp"
+            android:contentDescription="@null"
             android:scaleType="fitXY"
             android:src="@drawable/ic_poker_table"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -78,7 +81,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <TextView
+        <com.michael.cardgame.custom.CardTextView
             android:id="@+id/tv_center_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -91,7 +94,7 @@
             app:layout_constraintRight_toRightOf="@id/poker_outside_bg"
             app:layout_constraintTop_toTopOf="@id/poker_outside_bg" />
 
-        <TextView
+        <com.michael.cardgame.custom.CardTextView
             android:id="@+id/tv_play_card"
             android:layout_width="100dp"
             android:layout_height="45dp"
@@ -109,7 +112,7 @@
             app:layout_constraintRight_toLeftOf="@id/tv_pass"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <com.michael.cardgame.custom.CardTextView
             android:id="@+id/tv_pass"
             android:layout_width="100dp"
             android:layout_height="45dp"
@@ -125,12 +128,12 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <com.michael.cardgame.custom.CardTextView
             android:id="@+id/tv_user1_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="@id/iv_user1"
@@ -138,12 +141,12 @@
             app:layout_constraintTop_toBottomOf="@id/iv_user1"
             tools:text="手牌剩餘 : 13" />
 
-        <TextView
+        <com.michael.cardgame.custom.CardTextView
             android:id="@+id/tv_user2_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="@id/iv_user2"
@@ -155,16 +158,17 @@
             android:id="@+id/iv_user4"
             android:layout_width="70dp"
             android:layout_height="70dp"
+            android:contentDescription="@null"
             android:src="@drawable/ic_boy"
             app:layout_constraintBottom_toTopOf="@id/tv_user4_info"
             app:layout_constraintLeft_toLeftOf="@id/poker_outside_bg" />
 
-        <TextView
+        <com.michael.cardgame.custom.CardTextView
             android:id="@+id/tv_user4_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/poker_outside_bg"
@@ -177,16 +181,17 @@
             android:id="@+id/iv_user3"
             android:layout_width="70dp"
             android:layout_height="70dp"
+            android:contentDescription="@null"
             android:src="@drawable/ic_boy"
             app:layout_constraintBottom_toTopOf="@id/tv_user3_info"
             app:layout_constraintRight_toRightOf="@id/poker_outside_bg" />
 
-        <TextView
+        <com.michael.cardgame.custom.CardTextView
             android:id="@+id/tv_user3_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/poker_outside_bg"

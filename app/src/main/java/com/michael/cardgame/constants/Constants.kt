@@ -9,7 +9,7 @@ object Constants {
     const val POKER_SPADES = 3 //黑桃
 
     //卡牌代表的值
-    const val POKER_A = 1
+    const val POKER_A = 14
     const val POKER_2 = 2
     const val POKER_3 = 3
     const val POKER_4 = 4
@@ -39,6 +39,8 @@ object Constants {
     const val TWO_PAIR = 333
     //單支
     const val SINGLE = 222
+    //順子
+    const val STRAIGHT = 111
 
 
 }

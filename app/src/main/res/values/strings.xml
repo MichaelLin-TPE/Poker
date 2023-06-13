@@ -4,4 +4,6 @@
     <string name="can_not_play_card">無法出牌唷,再檢查一下</string>
     <string name="pass">Pass!!</string>
     <string name="winner">勝者</string>
+    <string name="confirm">總結</string>
+    <string name="check">查看</string>
 </resources>

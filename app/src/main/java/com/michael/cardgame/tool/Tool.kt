@@ -29,6 +29,7 @@ import com.michael.cardgame.constants.Constants.POKER_CLUBS
 import com.michael.cardgame.constants.Constants.POKER_DIAMOND
 import com.michael.cardgame.constants.Constants.POKER_HEART
 import com.michael.cardgame.constants.Constants.POKER_SPADES
+import com.michael.cardgame.constants.Constants.STRAIGHT
 import com.michael.cardgame.constants.Constants.STRAIGHT_FLUSH
 import com.michael.cardgame.constants.Constants.TWO_PAIR
 import com.weather.sunny.application.MyApplication
@@ -167,6 +168,7 @@ object Tool {
             STRAIGHT_FLUSH-> "同花順"
             FOUR_OF_KIND -> "鐵支"
             FULL_HOUSE -> "葫蘆"
+            STRAIGHT -> "順子"
             TWO_PAIR -> "兔胚"
             else -> "單張"
         }
