@@ -165,6 +165,7 @@ object PokerLogicTool {
                     if (straightData.cardValue + 1 == card2.cardValue) {
                         straightFlushList.add(card2)
                         isAddData = true
+                        break
                     }
                 }
                 if (!isAddData) {
@@ -209,6 +210,7 @@ object PokerLogicTool {
                             Log.i("Poker", "addData : ${card2.cardValue}")
                             straightFlushList.add(card2)
                             isAddData = true
+                            break
                         }
                     }
                     if (!isAddData) {
@@ -494,11 +496,22 @@ object PokerLogicTool {
         if (cardList.isEmpty()) {
             return twoPairList[Random().nextInt(twoPairList.size)]
         }
-        val randomIndex = Random().nextInt(cardList.size)
-        return cardList[randomIndex]
+        var position = 0
+        var num = 0
+        for ((index,card) in cardList.withIndex()){
+            if (num == 0 || card.cardValue == POKER_2){
+                num = card.cardValue
+                continue
+            }
+            if (num < card.cardValue){
+                num = card.cardValue
+                position = index
+            }
+        }
+        return cardList[position]
     }
 
-    fun getMaxSingleCard(
+    private fun getMaxSingleCard(
         userCardList: MutableList<CardData>
     ): CardData? {
         val cardList = userCardList.toMutableList()
@@ -539,7 +552,12 @@ object PokerLogicTool {
                 biggestIndex = index
                 continue
             }
-            if (card.cardValue == POKER_2 || card.cardValue == POKER_A && biggestCardNum != POKER_2 || biggestCardNum < card.cardValue) {
+            if (((card.cardValue == POKER_2 || card.cardValue == POKER_A) && biggestCardNum != POKER_2)) {
+                biggestCardNum = card.cardValue
+                biggestIndex = index
+                break
+            }
+            if (biggestCardNum < card.cardValue){
                 biggestCardNum = card.cardValue
                 biggestIndex = index
             }
@@ -960,6 +978,7 @@ object PokerLogicTool {
             Log.i("Poker", "都是鐵支")
             val mineCardNum = checkFourOfKindNum(mineSelectedCardList)
             val userCardNum = checkFourOfKindNum(currentPlayCardDataList)
+            Log.i("Poker","minNum : $mineCardNum , userNum : $userCardNum")
             if (mineCardNum == 2) {
                 return true
             }

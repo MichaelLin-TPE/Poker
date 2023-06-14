@@ -16,6 +16,7 @@ import com.michael.cardgame.constants.Constants.MINE
 import com.michael.cardgame.constants.Constants.USER_2
 import com.michael.cardgame.constants.Constants.USER_3
 import com.michael.cardgame.constants.Constants.USER_4
+import com.michael.cardgame.custom.CardTextView
 import com.michael.cardgame.tool.Tool
 import com.michael.cardgame.tool.Tool.convertDp
 
@@ -58,17 +59,27 @@ class ConfirmDialog : DialogFragment() {
         val user3ListView = view.findViewById<LinearLayout>(R.id.user3_card_list_view)
         val user4ListView = view.findViewById<LinearLayout>(R.id.user4_card_list_view)
 
+        val user1Win = view.findViewById<CardTextView>(R.id.tv_user1_win)
+        val user2Win = view.findViewById<CardTextView>(R.id.tv_user2_win)
+        val user3Win = view.findViewById<CardTextView>(R.id.tv_user3_win)
+        val user4Win = view.findViewById<CardTextView>(R.id.tv_user4_win)
+
+
         for (data in dataList){
             if (data.userNum == MINE){
+                user1Win.visibility = if (data.cardList.isNotEmpty()) View.GONE else View.VISIBLE
                 addView(user1ListView,data.cardList)
             }
             if (data.userNum == USER_2){
+                user2Win.visibility = if (data.cardList.isNotEmpty()) View.GONE else View.VISIBLE
                 addView(user2ListView,data.cardList)
             }
             if (data.userNum == USER_3){
+                user3Win.visibility = if (data.cardList.isNotEmpty()) View.GONE else View.VISIBLE
                 addView(user3ListView,data.cardList)
             }
             if (data.userNum == USER_4){
+                user4Win.visibility = if (data.cardList.isNotEmpty()) View.GONE else View.VISIBLE
                 addView(user4ListView,data.cardList)
             }
         }

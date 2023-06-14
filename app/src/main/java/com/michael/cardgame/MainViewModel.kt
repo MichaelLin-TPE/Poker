@@ -1088,11 +1088,14 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         onPlayCardComplete()
         showMinePassButtonAndPlayCardButton.value = View.GONE
         for (data in mineSelectedCardList) {
-            if (data.isSelected) {
-                data.isSelected = false
-                bringAllSelectedCardLiveData.value = data
+            for (card in myCardList){
+                if (data.cardValue == card.cardValue && data.cardType == card.cardType){
+                    data.isSelected = false
+                    bringAllSelectedCardLiveData.value = data
+                }
             }
         }
+        mineSelectedCardList.clear()
     }
 
     fun onCatchMineSelectedCard(it: CardData) {

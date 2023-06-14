@@ -55,6 +55,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <com.michael.cardgame.custom.CardTextView
+        android:id="@+id/tv_user1_win"
+        android:text="@string/win"
+        android:layout_marginStart="20dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/iv_user1"
+        app:layout_constraintBottom_toBottomOf="@id/iv_user1"
+        app:layout_constraintLeft_toRightOf="@id/iv_user1"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_marginEnd="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
 
     <ImageView
         android:id="@+id/iv_user2"
@@ -65,6 +80,21 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toTopOf="@id/iv_user3"
         app:layout_constraintTop_toBottomOf="@id/iv_user1" />
+
+    <com.michael.cardgame.custom.CardTextView
+        android:id="@+id/tv_user2_win"
+        android:text="@string/win"
+        android:layout_marginStart="20dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/iv_user2"
+        app:layout_constraintBottom_toBottomOf="@id/iv_user2"
+        app:layout_constraintLeft_toRightOf="@id/iv_user2"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_marginEnd="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 
     <LinearLayout
@@ -103,6 +133,21 @@
         app:layout_constraintBottom_toTopOf="@id/iv_user4"
         app:layout_constraintTop_toBottomOf="@id/iv_user2" />
 
+    <com.michael.cardgame.custom.CardTextView
+        android:id="@+id/tv_user3_win"
+        android:text="@string/win"
+        android:layout_marginStart="20dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/iv_user3"
+        app:layout_constraintBottom_toBottomOf="@id/iv_user3"
+        app:layout_constraintLeft_toRightOf="@id/iv_user3"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_marginEnd="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
 
     <LinearLayout
         android:id="@+id/user3_card_list_view"
@@ -139,6 +184,21 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tv_confirm"
         app:layout_constraintTop_toBottomOf="@id/iv_user3" />
+
+    <com.michael.cardgame.custom.CardTextView
+        android:id="@+id/tv_user4_win"
+        android:text="@string/win"
+        android:layout_marginStart="20dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/iv_user4"
+        app:layout_constraintBottom_toBottomOf="@id/iv_user4"
+        app:layout_constraintLeft_toRightOf="@id/iv_user4"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_marginEnd="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 
     <LinearLayout
