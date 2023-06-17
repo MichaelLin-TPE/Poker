@@ -2,16 +2,30 @@ package com.michael.cardgame.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.michael.cardgame.MainViewModel
+import com.michael.cardgame.LauncherViewModel
+import com.michael.cardgame.big_two.BigTwoViewModel
+import com.michael.cardgame.home.HomeViewModel
 import com.weather.sunny.application.MyApplication
 
 class ViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(MainViewModel::class.java)){
+        if (modelClass.isAssignableFrom(BigTwoViewModel::class.java)){
             MyApplication.instance?.let {
-                return MainViewModel(it) as T
+                return BigTwoViewModel(it) as T
             }
         }
+        if (modelClass.isAssignableFrom(HomeViewModel::class.java)){
+            MyApplication.instance?.let {
+                return HomeViewModel(it) as T
+            }
+        }
+
+        if (modelClass.isAssignableFrom(LauncherViewModel::class.java)){
+            MyApplication.instance?.let {
+                return LauncherViewModel(it) as T
+            }
+        }
+
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

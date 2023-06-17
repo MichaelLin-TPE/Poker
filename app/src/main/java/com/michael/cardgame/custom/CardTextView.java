@@ -16,7 +16,7 @@ public class CardTextView extends androidx.appcompat.widget.AppCompatTextView {
     }
 
     private void initView() {
-        Typeface typeface = ResourcesCompat.getFont(getContext(), R.font.deposit_enterance_font);
+        Typeface typeface = ResourcesCompat.getFont(getContext(), R.font.font);
         setTypeface(typeface);
     }
 

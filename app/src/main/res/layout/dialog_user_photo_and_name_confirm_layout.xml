@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/user_photo_and_name_dialog_bg"
+    android:padding="15dp"
+    android:layout_width="300dp"
+    android:layout_height="350dp">
+
+    <com.michael.cardgame.custom.CardTextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+
+        android:gravity="center"
+        android:text="選擇一個屬於自己的頭像"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_photo_list"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="4"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintBottom_toTopOf="@id/ed_name"
+        android:layout_marginBottom="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+
+    <EditText
+        android:id="@+id/ed_name"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:hint="@string/input_name"
+        android:layout_marginTop="20dp"
+        android:padding="8dp"
+        android:background="@drawable/edit_username_bg"
+        app:layout_constraintBottom_toTopOf="@id/tv_submit"
+        android:layout_marginBottom="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <com.michael.cardgame.custom.CardTextView
+        android:id="@+id/tv_submit"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_bg"
+        android:gravity="center"
+        android:text="提交"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

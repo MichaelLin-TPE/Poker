@@ -33,7 +33,7 @@ import com.michael.cardgame.constants.Constants.STRAIGHT
 import com.michael.cardgame.constants.Constants.STRAIGHT_FLUSH
 import com.michael.cardgame.constants.Constants.TWO_PAIR
 import com.weather.sunny.application.MyApplication
-import kotlin.math.min
+import java.text.DecimalFormat
 
 object Tool {
 
@@ -51,6 +51,10 @@ object Tool {
 
     fun getContext(): Context = MyApplication.instance?.applicationContext!!
 
+    fun formatThousand(value: Int): String {
+        val decimalFormat = DecimalFormat("#,###")
+        return decimalFormat.format(value)
+    }
 
     fun getAllCardList(): MutableList<CardData> {
         val list = mutableListOf<CardData>()

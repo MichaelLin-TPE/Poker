@@ -6,16 +6,15 @@
         android:id="@+id/root_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
-        tools:context=".MainActivity">
-
+        android:background="@drawable/ic_poker_bg"
+        tools:context=".big_two.BigTwoActivity">
 
         <ImageView
             android:id="@+id/iv_user1"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:contentDescription="@null"
-            android:src="@drawable/ic_boy"
+            android:src="@drawable/ic_boy2"
             app:layout_constraintLeft_toLeftOf="@id/poker_outside_bg"
             app:layout_constraintTop_toTopOf="@id/poker_outside_bg" />
 
@@ -37,7 +36,7 @@
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:contentDescription="@null"
-            android:src="@drawable/ic_boy"
+            android:src="@drawable/ic_boy1"
             app:layout_constraintRight_toRightOf="@id/poker_outside_bg"
             app:layout_constraintTop_toTopOf="@id/poker_outside_bg" />
 
@@ -106,6 +105,7 @@
             android:textColor="@color/white"
             android:textSize="20sp"
             android:visibility="invisible"
+            tools:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -123,6 +123,7 @@
             android:textColor="@color/white"
             android:textSize="20sp"
             android:visibility="invisible"
+            tools:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/tv_play_card"
             app:layout_constraintRight_toRightOf="parent"
@@ -159,7 +160,7 @@
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:contentDescription="@null"
-            android:src="@drawable/ic_boy"
+            android:src="@drawable/ic_girl"
             app:layout_constraintBottom_toTopOf="@id/tv_user4_info"
             app:layout_constraintLeft_toLeftOf="@id/poker_outside_bg" />
 
@@ -182,7 +183,7 @@
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:contentDescription="@null"
-            android:src="@drawable/ic_boy"
+            android:src="@drawable/ic_girl1"
             app:layout_constraintBottom_toTopOf="@id/tv_user3_info"
             app:layout_constraintRight_toRightOf="@id/poker_outside_bg" />
 

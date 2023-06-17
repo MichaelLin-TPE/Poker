@@ -1,4 +1,4 @@
-package com.michael.cardgame
+package com.michael.cardgame.big_two
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -16,6 +16,7 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
+import com.michael.cardgame.R
 import com.michael.cardgame.base.BaseActivity
 import com.michael.cardgame.bean.CardData
 import com.michael.cardgame.databinding.ActivityMainBinding
@@ -25,16 +26,16 @@ import com.michael.cardgame.tool.Tool.convertDp
 import java.util.Random
 
 
-class MainActivity : BaseActivity() {
+class BigTwoActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: MainViewModel
+    private lateinit var viewModel: BigTwoViewModel
     private var randomSingleCard: CardData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        viewModel = getViewModel(MainViewModel::class.java)
+        viewModel = getViewModel(BigTwoViewModel::class.java)
 
 
         binding.rootView.viewTreeObserver.addOnGlobalLayoutListener(object :
@@ -111,7 +112,9 @@ class MainActivity : BaseActivity() {
 
         viewModel.showInformationLiveData.observe(this){
             binding.tvCenterInfo.alpha = 1f
-            val animation : Animation = AnimationUtils.loadAnimation(this@MainActivity,R.anim.scale_and_fade)
+            val animation : Animation = AnimationUtils.loadAnimation(this@BigTwoActivity,
+                R.anim.scale_and_fade
+            )
             animation.setAnimationListener(object : Animation.AnimationListener{
                 override fun onAnimationStart(animation: Animation?) {
 
@@ -149,9 +152,9 @@ class MainActivity : BaseActivity() {
                 ?.start()
         }
         viewModel.showMinePassButtonAndPlayCardButton.observe(this){
-            binding.tvPass.visibility = it
+            binding.tvPass.visibility = it.second
             binding.tvPass.bringToFront()
-            binding.tvPlayCard.visibility = it
+            binding.tvPlayCard.visibility = it.first
             binding.tvPlayCard.bringToFront()
         }
 
@@ -217,6 +220,20 @@ class MainActivity : BaseActivity() {
         viewModel.showConfirmDialogLiveData.observe(this){
             val dialog = ConfirmDialog.newInstance(it)
             dialog.show(supportFragmentManager,"dialog")
+            dialog.setOnPlayAgainClickListener{
+                viewModel.onPlayAgainClickListener()
+            }
+        }
+
+        viewModel.removeAllCardLiveData.observe(this){
+            binding.rootView.removeView(it.cardView)
+        }
+
+        viewModel.hideUserLeftCardLiveData.observe(this){
+            binding.tvUser1Info.visibility = it
+            binding.tvUser2Info.visibility = it
+            binding.tvUser3Info.visibility = it
+            binding.tvUser4Info.visibility = it
         }
 
     }
@@ -254,7 +271,6 @@ class MainActivity : BaseActivity() {
                 it.cardView?.animate()?.y(it.targetY)?.setDuration(100)?.start()
             }
             viewModel.onCatchMineSelectedCard(it)
-
         }
     }
 
@@ -344,8 +360,9 @@ class MainActivity : BaseActivity() {
         val targetX =
             ((Tool.getScreenWidth(this) - (Tool.getCardWidth())) / 2).toFloat() - plusValue
         val targetY =
-            ((Tool.getScreenHeight(this) - (Tool.getCardHeight())) / 2).toFloat() - plusValue
+            (((binding.pokerOutsideBg.y + binding.pokerOutsideBg.height) - (Tool.getCardHeight())) / 2) - plusValue
         cardData.cardView?.animate()
+            ?.rotation(0f)
             ?.x(targetX)
             ?.withEndAction {
                 cardData.cardView?.x = targetX
@@ -401,7 +418,6 @@ class MainActivity : BaseActivity() {
             view.visibility = View.VISIBLE
             data.cardView = view
         }
-
     }
 
     override fun onDestroy() {

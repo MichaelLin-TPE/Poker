@@ -550,10 +550,13 @@ object PokerLogicTool {
             if (biggestCardNum == 0) {
                 biggestCardNum = card.cardValue
                 biggestIndex = index
+                if (biggestCardNum == POKER_2){
+                    break
+                }
                 continue
             }
-            if (((card.cardValue == POKER_2 || card.cardValue == POKER_A) && biggestCardNum != POKER_2)) {
-                biggestCardNum = card.cardValue
+            if (card.cardValue == POKER_2) {
+                Log.i("Poker","找到老二 index $index")
                 biggestIndex = index
                 break
             }
@@ -562,6 +565,7 @@ object PokerLogicTool {
                 biggestIndex = index
             }
         }
+        Log.i("Poker","發出卡牌 : ${cardList[biggestIndex].cardValue}")
         return cardList[biggestIndex]
     }
 

@@ -7,4 +7,6 @@
     <string name="confirm">總結</string>
     <string name="check">查看</string>
     <string name="win">勝利</string>
+    <string name="input_name">請輸入暱稱</string>
+    <string name="big_two">大老二</string>
 </resources>

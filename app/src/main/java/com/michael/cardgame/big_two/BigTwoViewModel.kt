@@ -1,9 +1,10 @@
-package com.michael.cardgame
+package com.michael.cardgame.big_two
 
 import android.app.Application
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.MutableLiveData
+import com.michael.cardgame.R
 import com.michael.cardgame.base.BaseViewModel
 import com.michael.cardgame.bean.CardData
 import com.michael.cardgame.bean.LeftUserCardListData
@@ -45,7 +46,7 @@ import java.util.Collections
 import java.util.Random
 import java.util.concurrent.TimeUnit
 
-class MainViewModel(private val application: Application) : BaseViewModel(application) {
+class BigTwoViewModel(private val application: Application) : BaseViewModel(application) {
 
     val showPokerLiveData = MutableLiveData<CardData>()
     val bringPokerTogether = MutableLiveData<Pair<CardData, Float>>()
@@ -58,13 +59,15 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
     val userCollectCardsLiveData = MutableLiveData<Pair<CardData, Int>>()
     val showInformationLiveData = MutableLiveData<String>()
     val startShowingUserCards = MutableLiveData<Pair<CardData, Boolean>>()
-    val showMinePassButtonAndPlayCardButton = MutableLiveData<Int>()
+    val showMinePassButtonAndPlayCardButton = MutableLiveData<Pair<Int,Int>>()
     val refreshMyCardsLiveData = MutableLiveData<CardData>()
     val bringAlreadyShowingCardTogetherLiveData = MutableLiveData<CardData>()
     val bringAllSelectedCardLiveData = MutableLiveData<CardData>()
     val showPassContentLiveData = MutableLiveData<Int>()
     val showUserLeftCardLiveData = MutableLiveData<Pair<Int, Int>>()
+    val hideUserLeftCardLiveData = MutableLiveData<Int>()
     val showConfirmDialogLiveData = MutableLiveData<ArrayList<LeftUserCardListData>>()
+    val removeAllCardLiveData = MutableLiveData<CardData>()
     private val allCardList = Tool.getAllCardList()
     private var screenWidth = 0
     private var screenHeight = 0
@@ -90,7 +93,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
     private var passCount = 0 //計算本ROUND的Pass數量
 
     fun startToFlow() {
-        showMinePassButtonAndPlayCardButton.value = View.INVISIBLE
+        showMinePassButtonAndPlayCardButton.value = Pair(View.GONE,View.GONE)
         startToShowRefreshCardAnimation()
     }
 
@@ -125,6 +128,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
     }
 
     private fun startToBringAllPokerTogether() {
+        cardIndexFinishedCount = 0f
         mCompositeSubscription.add(
             Observable.interval(50, TimeUnit.MILLISECONDS)
                 .zipWith(allCardList) { _, item -> item }
@@ -241,6 +245,9 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
 
         allCardList.shuffle()
         myCardList.clear()
+        user2CardList.clear()
+        user3CardList.clear()
+        user4CardList.clear()
         for (index in 0 until allCardList.size) {
             val cardData = allCardList[index]
 //            if (isForUser1(cardData)) {
@@ -524,6 +531,11 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
             "Poker",
             "mine : $mineFirst , user2 $user2First , user3 $user3First , user4 $user4First"
         )
+        dealCardIndex = 0
+        myIndex = 0
+        user2Index = 0
+        user3Index = 0
+        user4Index = 0
         dealCard()
 
 
@@ -557,7 +569,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         if (isMineTure) {
             Log.i("Poker", "由我開始出")
             currentNextUserNum = MINE
-            showMinePassButtonAndPlayCardButton.value = View.VISIBLE
+            showMinePassButtonAndPlayCardButton.value = Pair(View.VISIBLE,View.GONE)
             return
         }
         var isUser2Turn = false
@@ -838,8 +850,12 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         }
         if (currentNextUserNum == MINE) {
             Log.i("Poker", "輪到我了 pass count : $passCount")
-            checkPassCount();
-            showMinePassButtonAndPlayCardButton.value = View.VISIBLE
+            if (passCount == 3){
+                showMinePassButtonAndPlayCardButton.value = Pair(View.VISIBLE,View.GONE)
+            }else{
+                showMinePassButtonAndPlayCardButton.value = Pair(View.VISIBLE,View.VISIBLE)
+            }
+            checkPassCount()
             return
         }
         checkPassCount();
@@ -852,15 +868,11 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
             onPlayCardComplete()
             return
         }
-
-        for (card in cardList) {
-            Log.i(
-                "Poker",
-                "user$currentNextUserNum 發牌 : ${card.cardValue} 花色 : ${Tool.getFlavor(card.cardType)}"
-            )
-        }
         currentPlayCardDataList.clear()
         currentPlayCardDataList = cardList.toMutableList()
+        cardList.sortWith{ o1,o2->
+            o1.cardValue - o2.cardValue
+        }
         for ((index, card) in cardList.withIndex()) {
             card.targetX = getPlayCardTargetX(currentNextUserNum, index)
             card.targetY = getPlayCardTargetY(currentNextUserNum, index)
@@ -869,10 +881,8 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         passCount = 0
         allAlreadyShowingCardList.addAll(currentPlayCardDataList)
         PokerLogicTool.countLeftCards(getUserCardList(currentNextUserNum), cardList)
-        Log.i(
-            "Poker",
-            "user$currentNextUserNum 剩餘的卡牌數量 : ${getUserCardList(currentNextUserNum).size}"
-        )
+        Log.i("Poker",
+            "user$currentNextUserNum 剩餘的卡牌數量 : ${getUserCardList(currentNextUserNum).size}")
         showUserLeftCardLiveData.value =
             Pair(getUserCardList(currentNextUserNum).size, currentNextUserNum)
         countNextPlayer()
@@ -961,6 +971,28 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
             return mutableListOf(PokerLogicTool.getMinSingleCard(userCardList))
 
         }
+        if (currentCardType == STRAIGHT_FLUSH){
+            return PokerLogicTool.searchForStraightFlushCompare(
+                userCardList,
+                currentPlayCardDataList
+            )
+        }
+        if (currentCardType == FOUR_OF_KIND){
+            return PokerLogicTool.searchForFourOfKindCompare(
+                userCardList,
+                currentPlayCardDataList
+            )
+        }
+        if ((myCardList.size <= 8 || user2CardList.size <= 8 || user3CardList.size <= 8 || user4CardList.size <= 8)){
+            val straightFlush = PokerLogicTool.searchForStraightFlushNew(userCardList)
+            if (straightFlush.isNotEmpty()){
+                return straightFlush[Random().nextInt(straightFlush.size)]
+            }
+            val fourOfKind = PokerLogicTool.searchForFourOfKindNew(userCardList)
+            if (fourOfKind.isNotEmpty()){
+                return fourOfKind[Random().nextInt(fourOfKind.size)]
+            }
+        }
 
         Log.i("Poker", "目前的需要發的卡牌組為 : ${Tool.getCardType(currentCardType)}")
         if (currentCardType == SINGLE) {
@@ -980,16 +1012,6 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         }
 
         return when (currentCardType) {
-            STRAIGHT_FLUSH -> PokerLogicTool.searchForStraightFlushCompare(
-                userCardList,
-                currentPlayCardDataList
-            )
-
-            FOUR_OF_KIND -> PokerLogicTool.searchForFourOfKindCompare(
-                userCardList,
-                currentPlayCardDataList
-            )
-
             FULL_HOUSE -> PokerLogicTool.searchForFullHouseCompare(
                 userCardList,
                 currentPlayCardDataList
@@ -1017,7 +1039,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
             showErrorMsg(application.getString(R.string.can_not_play_card))
             return
         }
-        showMinePassButtonAndPlayCardButton.value = View.GONE
+        showMinePassButtonAndPlayCardButton.value = Pair(View.GONE,View.GONE)
         currentCardType = PokerLogicTool.checkCardsType(mineSelectedCardList)
         currentPlayCardDataList = mineSelectedCardList.toMutableList()
         allAlreadyShowingCardList.addAll(currentPlayCardDataList)
@@ -1086,7 +1108,7 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         doPass()
         countNextPlayer()
         onPlayCardComplete()
-        showMinePassButtonAndPlayCardButton.value = View.GONE
+        showMinePassButtonAndPlayCardButton.value = Pair(View.GONE,View.GONE)
         for (data in mineSelectedCardList) {
             for (card in myCardList){
                 if (data.cardValue == card.cardValue && data.cardType == card.cardType){
@@ -1104,6 +1126,17 @@ class MainViewModel(private val application: Application) : BaseViewModel(applic
         } else {
             mineSelectedCardList.remove(it)
         }
+    }
+
+    fun onPlayAgainClickListener() {
+        currentPlayCardDataList.clear()
+        for (data in allCardList){
+            removeAllCardLiveData.value = data
+        }
+        allCardList.clear()
+        allCardList.addAll(Tool.getAllCardList())
+        startToShowRefreshCardAnimation()
+        hideUserLeftCardLiveData.value = View.GONE
     }
 
 

@@ -33,6 +33,12 @@ class ConfirmDialog : DialogFragment() {
 
     }
 
+    private lateinit var onPlayAgainClickListener: OnPlayAgainClickListener
+
+    fun setOnPlayAgainClickListener(onPlayAgainClickListener: OnPlayAgainClickListener){
+        this.onPlayAgainClickListener = onPlayAgainClickListener
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val inflater = activity?.layoutInflater
         val view = inflater?.inflate(R.layout.dialog_confirm_layout, null)
@@ -41,7 +47,6 @@ class ConfirmDialog : DialogFragment() {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(view)
         dialog.window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
-        dialog.setCancelable(false)
         val window = dialog.window
         val wlp = window?.attributes
         wlp?.width = 650.convertDp()
@@ -51,9 +56,9 @@ class ConfirmDialog : DialogFragment() {
     }
 
     private fun initView(view: View) {
-
+        isCancelable = false
         val dataList = arguments?.getSerializable("data") as ArrayList<LeftUserCardListData>
-
+        val tvPlayAgain = view.findViewById<TextView>(R.id.tv_confirm)
         val user1ListView = view.findViewById<LinearLayout>(R.id.user1_card_list_view)
         val user2ListView = view.findViewById<LinearLayout>(R.id.user2_card_list_view)
         val user3ListView = view.findViewById<LinearLayout>(R.id.user3_card_list_view)
@@ -83,7 +88,10 @@ class ConfirmDialog : DialogFragment() {
                 addView(user4ListView,data.cardList)
             }
         }
-
+        tvPlayAgain.setOnClickListener {
+            onPlayAgainClickListener.playAgain()
+            dismiss()
+        }
     }
 
     private fun addView(user1ListView: LinearLayout, cardList: MutableList<CardData>) {
@@ -110,6 +118,10 @@ class ConfirmDialog : DialogFragment() {
             }
         }
 
+    }
+
+    fun interface OnPlayAgainClickListener{
+        fun playAgain()
     }
 
 }
