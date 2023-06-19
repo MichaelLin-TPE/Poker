@@ -71,6 +71,26 @@ class BigTwoActivity : BaseActivity() {
     }
 
     private fun handleLiveData() {
+        viewModel.showTotalAmount.observe(this){
+            Log.i("Poker","member : ${it.second}")
+            when(it.second){
+                1 ->{
+                    binding.tvUser4Amount.text = "$"+Tool.formatThousand(it.first)
+                }
+                2 ->{
+                    binding.tvUser1Amount.text = "$"+Tool.formatThousand(it.first)
+                }
+                3 ->{
+                    binding.tvUser2Amount.text = "$"+Tool.formatThousand(it.first)
+                }
+                else ->{
+                    binding.tvUser3Amount.text = "$"+Tool.formatThousand(it.first)
+                }
+            }
+        }
+        viewModel.showUserPhotoLiveData.observe(this){
+            binding.ivUser4.setImageResource(it)
+        }
         viewModel.showPokerLiveData.observe(this) {
             showPoker(it)
         }
@@ -375,10 +395,8 @@ class BigTwoActivity : BaseActivity() {
     }
 
     private fun bringAlreadyShowCardTogether(cardData: CardData){
-        val targetX =
-            ((Tool.getScreenWidth(this) - (Tool.getCardWidth())) / 2).toFloat()
-        val targetY =
-            ((Tool.getScreenHeight(this) - (Tool.getCardHeight())) / 2).toFloat()
+        val targetX = binding.ivUser1.x + binding.ivUser1.width + 50f
+        val targetY = (binding.pokerOutsideBg.y + binding.pokerOutsideBg.height - Tool.getCardHeight()) / 2
         cardData.cardView?.animate()
             ?.rotation(Random().nextFloat() * 45)
             ?.x(targetX)

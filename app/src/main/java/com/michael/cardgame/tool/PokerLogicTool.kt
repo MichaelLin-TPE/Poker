@@ -33,11 +33,11 @@ object PokerLogicTool {
         if (straightWith2.isNotEmpty()) {
             dataList.add(straightWith2)
         }
-        //接者找第二大的同花順
-        val straightWithA = findStraightFlushWithSpecialNum(copylist, POKER_A)
-        if (straightWithA.isNotEmpty()) {
-            dataList.add(straightWithA)
-        }
+//        //接者找第二大的同花順
+//        val straightWithA = findStraightFlushWithSpecialNum(copylist, POKER_A)
+//        if (straightWithA.isNotEmpty()) {
+//            dataList.add(straightWithA)
+//        }
         val straightWithNormal = findStraightFlushWithSpecialNum(copylist, -1)
         if (straightWithNormal.isNotEmpty()) {
             dataList.add(straightWithNormal)
@@ -58,11 +58,11 @@ object PokerLogicTool {
         if (straightWith2.isNotEmpty()) {
             dataList.add(straightWith2)
         }
-        //接者找第二大的同花順
-        val straightWithA = findStraightWithSpecialNum(copylist, POKER_A)
-        if (straightWithA.isNotEmpty()) {
-            dataList.add(straightWithA)
-        }
+//        //接者找第二大的同花順
+//        val straightWithA = findStraightWithSpecialNum(copylist, POKER_A)
+//        if (straightWithA.isNotEmpty()) {
+//            dataList.add(straightWithA)
+//        }
         val straightWithNormal = findStraightWithSpecialNum(copylist, -1)
         if (straightWithNormal.isNotEmpty()) {
             dataList.add(straightWithNormal)
@@ -511,6 +511,61 @@ object PokerLogicTool {
         return cardList[position]
     }
 
+    fun getMinCard(
+        userCardList: MutableList<CardData>
+    ): CardData {
+        val cardList = userCardList.toMutableList()
+        //尋找同花順
+        val straightFlushList = searchForStraightFlushNew(cardList)
+        val straightIterator = straightFlushList.iterator()
+        while (straightIterator.hasNext()) {
+            val straightList = straightIterator.next()
+            //剩餘卡片張數
+            countLeftCards(cardList, straightList)
+        }
+        //尋找鐵支
+        val fourOfKindList = searchForFourOfKindNew(cardList)
+        //剩餘卡片張數
+        for (fourList in fourOfKindList){
+            countLeftCards(cardList, fourList)
+        }
+        //尋找葫蘆
+        val fullHouseList = searchForFullHouse(cardList, true)
+        //剩餘卡片張數
+        countLeftCards(cardList, fullHouseList)
+        //尋找兔胚
+        val twoPairList = searchTwoPair(cardList, true)
+        //剩餘卡片張數
+        countLeftCards(cardList, twoPairList)
+        val iterator = cardList.iterator()
+        while (iterator.hasNext()) {
+            val data = iterator.next()
+            if (data.cardValue == 3 && data.cardType == POKER_CLUBS) {
+                iterator.remove()
+            }
+        }
+        if (cardList.isEmpty()) {
+            return twoPairList[Random().nextInt(twoPairList.size)]
+        }
+        var position = 0
+        var num = 0
+        for ((index,card) in cardList.withIndex()){
+            if (card.cardValue == POKER_2){
+                continue
+            }
+            if (num == 0){
+                num = card.cardValue
+                continue
+            }
+            if (num > card.cardValue){
+                num = card.cardValue
+                position = index
+            }
+        }
+        return cardList[position]
+    }
+
+
     private fun getMaxSingleCard(
         userCardList: MutableList<CardData>
     ): CardData? {
@@ -937,6 +992,13 @@ object PokerLogicTool {
         currentPlayCardDataList.sortWith { o1, o2 ->
             o1.cardValue - o2.cardValue
         }
+        if (isCheckStraightFlush(mineSelectedCardList) && !isCheckStraightFlush(currentPlayCardDataList)){
+            return true
+        }
+        if (isCheckFourOfKind(mineSelectedCardList) && !isCheckFourOfKind(currentPlayCardDataList)){
+            return true
+        }
+
         if (mineSelectedCardList.size != currentPlayCardDataList.size) {
             Log.i("Poker","張數不一致 無法出 我 : ${mineSelectedCardList.size} 張 , 對手 : ${currentPlayCardDataList.size} 張")
             return false

@@ -6,7 +6,8 @@
     <string name="winner">勝者</string>
     <string name="confirm">總結</string>
     <string name="check">查看</string>
-    <string name="win">勝利</string>
+    <string name="win">血賺</string>
     <string name="input_name">請輸入暱稱</string>
     <string name="big_two">大老二</string>
+    <string name="need_three_club">需要先出梅花三</string>
 </resources>

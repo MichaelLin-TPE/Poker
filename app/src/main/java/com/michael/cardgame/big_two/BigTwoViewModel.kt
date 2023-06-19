@@ -38,6 +38,7 @@ import com.michael.cardgame.constants.Constants.USER_4
 import com.michael.cardgame.tool.PokerLogicTool
 import com.michael.cardgame.tool.Tool
 import com.michael.cardgame.tool.Tool.convertDp
+import com.michael.cardgame.tool.UserDataTool
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -59,7 +60,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
     val userCollectCardsLiveData = MutableLiveData<Pair<CardData, Int>>()
     val showInformationLiveData = MutableLiveData<String>()
     val startShowingUserCards = MutableLiveData<Pair<CardData, Boolean>>()
-    val showMinePassButtonAndPlayCardButton = MutableLiveData<Pair<Int,Int>>()
+    val showMinePassButtonAndPlayCardButton = MutableLiveData<Pair<Int, Int>>()
     val refreshMyCardsLiveData = MutableLiveData<CardData>()
     val bringAlreadyShowingCardTogetherLiveData = MutableLiveData<CardData>()
     val bringAllSelectedCardLiveData = MutableLiveData<CardData>()
@@ -68,6 +69,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
     val hideUserLeftCardLiveData = MutableLiveData<Int>()
     val showConfirmDialogLiveData = MutableLiveData<ArrayList<LeftUserCardListData>>()
     val removeAllCardLiveData = MutableLiveData<CardData>()
+    val showUserPhotoLiveData = MutableLiveData<Int>()
+    val showTotalAmount = MutableLiveData<Pair<Int,Int>>()
     private val allCardList = Tool.getAllCardList()
     private var screenWidth = 0
     private var screenHeight = 0
@@ -92,8 +95,19 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
     private var allAlreadyShowingCardList = mutableListOf<CardData>()
     private var passCount = 0 //計算本ROUND的Pass數量
 
+
+    init {
+        showUserPhotoLiveData.value = UserDataTool.getUserPhoto()
+
+    }
+
     fun startToFlow() {
-        showMinePassButtonAndPlayCardButton.value = Pair(View.GONE,View.GONE)
+        showMinePassButtonAndPlayCardButton.value = Pair(View.GONE, View.GONE)
+        showTotalAmount.value = Pair(UserDataTool.getUserCashAmount(),1)
+        showTotalAmount.value = Pair(UserDataTool.getBot2CashAmount(),2)
+        showTotalAmount.value = Pair(UserDataTool.getBot3CashAmount(),3)
+        showTotalAmount.value = Pair(UserDataTool.getBot4CashAmount(),4)
+        Log.i("Poker","mine : ${UserDataTool.getUserCashAmount()} , bot2 : ${UserDataTool.getBot2CashAmount()} , bot3 : ${UserDataTool.getBot3CashAmount()} , bot4 : ${UserDataTool.getBot4CashAmount()}")
         startToShowRefreshCardAnimation()
     }
 
@@ -153,6 +167,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
     fun setScreenWidthAndHeight(screenWidth: Int, screenHeight: Int) {
         this.screenWidth = screenWidth
         this.screenHeight = screenHeight
+        Log.i("Poker","width : $screenWidth height : $screenHeight")
     }
 
     fun onDestroy() {
@@ -557,6 +572,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         }
     }
 
+    private var isThreeOfClubInMyHand = false
+
     fun startPlayACard() {
         Log.i("Poker", "開始出牌 尋找梅花三的玩家")
         var isMineTure = false
@@ -567,9 +584,10 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             }
         }
         if (isMineTure) {
+            isThreeOfClubInMyHand = true
             Log.i("Poker", "由我開始出")
             currentNextUserNum = MINE
-            showMinePassButtonAndPlayCardButton.value = Pair(View.VISIBLE,View.GONE)
+            showMinePassButtonAndPlayCardButton.value = Pair(View.VISIBLE, View.GONE)
             return
         }
         var isUser2Turn = false
@@ -649,8 +667,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             showCardInfo(straightFlushList)
             countNextPlayer()
             for ((index, card) in straightFlushList.withIndex()) {
-                card.targetX = getPlayCardTargetX(userNum, index)
-                card.targetY = getPlayCardTargetY(userNum, index)
+                card.targetX = getPlayCardTargetX(index, straightFlushList.size)
+                card.targetY = getPlayCardTargetY(straightFlushList.size)
                 startShowingUserCards.value = Pair(card, index == straightFlushList.size - 1)
             }
             passCount = 0
@@ -677,8 +695,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             showCardInfo(fourOfKindList)
             countNextPlayer()
             for ((index, card) in fourOfKindList.withIndex()) {
-                card.targetX = getPlayCardTargetX(userNum, index + 1)
-                card.targetY = getPlayCardTargetY(userNum, index + 1)
+                card.targetX = getPlayCardTargetX(index + 1,fourOfKindList.size)
+                card.targetY = getPlayCardTargetY(fourOfKindList.size)
                 startShowingUserCards.value = Pair(card, index == fourOfKindList.size - 1)
             }
             passCount = 0
@@ -697,8 +715,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             showCardInfo(fullHouseListWith3Clubs)
             countNextPlayer()
             for ((index, card) in fullHouseListWith3Clubs.withIndex()) {
-                card.targetX = getPlayCardTargetX(userNum, index)
-                card.targetY = getPlayCardTargetY(userNum, index)
+                card.targetX = getPlayCardTargetX(index, fullHouseListWith3Clubs.size)
+                card.targetY = getPlayCardTargetY(fullHouseListWith3Clubs.size)
                 startShowingUserCards.value = Pair(card, index == fullHouseListWith3Clubs.size - 1)
             }
             passCount = 0
@@ -729,8 +747,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             showCardInfo(straightFlushList)
             countNextPlayer()
             for ((index, card) in straightFlushList.withIndex()) {
-                card.targetX = getPlayCardTargetX(userNum, index)
-                card.targetY = getPlayCardTargetY(userNum, index)
+                card.targetX = getPlayCardTargetX(index, straightFlushList.size)
+                card.targetY = getPlayCardTargetY(straightFlushList.size)
                 startShowingUserCards.value = Pair(card, index == straightFlushList.size - 1)
             }
             passCount = 0
@@ -749,8 +767,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             showCardInfo(twoPairListWith3Clubs)
             countNextPlayer()
             for ((index, card) in twoPairListWith3Clubs.withIndex()) {
-                card.targetX = getPlayCardTargetX(userNum, index)
-                card.targetY = getPlayCardTargetY(userNum, index)
+                card.targetX = getPlayCardTargetX(index, twoPairListWith3Clubs.size)
+                card.targetY = getPlayCardTargetY(twoPairListWith3Clubs.size)
                 startShowingUserCards.value = Pair(card, index == twoPairListWith3Clubs.size - 1)
             }
             passCount = 0
@@ -768,8 +786,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         list.add(singleCardWithThree)
         showCardInfo(list)
         countNextPlayer()
-        singleCardWithThree.targetX = getPlayCardTargetX(userNum, 0)
-        singleCardWithThree.targetY = getPlayCardTargetY(userNum, 0)
+        singleCardWithThree.targetX = getPlayCardTargetX(0, 1)
+        singleCardWithThree.targetY = getPlayCardTargetY(1)
         startShowingUserCards.value = Pair(singleCardWithThree, true)
         passCount = 0
         PokerLogicTool.countLeftCards(getUserCardList(userNum), list)
@@ -789,20 +807,26 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         }
     }
 
-    private fun getPlayCardTargetX(userNum: Int, index: Int): Float {
-        return when (userNum) {
-            2 -> user2LocationX + 40.convertDp() * index
-            3 -> user3LocationX - 40.convertDp() * index
-            else -> user4LocationX - 40.convertDp() * index
-        }
+    private fun getPlayCardTargetX(index: Int, cardCount: Int): Float {
+
+        return ((screenWidth - (Tool.getCardWidth() * cardCount)) / 2f) + (Tool.getCardWidth() * index)
+
+//        return when (userNum) {
+//            2 -> user2LocationX + 40.convertDp() * index
+//            3 -> user3LocationX - 40.convertDp() * index
+//            else -> user4LocationX - 40.convertDp() * index
+//        }
     }
 
-    private fun getPlayCardTargetY(userNum: Int, index: Int): Float {
-        return when (userNum) {
-            2 -> user2LocationY
-            3 -> user3LocationY
-            else -> user4LocationY
-        }
+    private fun getPlayCardTargetY(cardCount:Int): Float {
+
+        return (screenHeight - Tool.getCardHeight()) / 2f
+
+//        return when (userNum) {
+//            2 -> user2LocationY
+//            3 -> user3LocationY
+//            else -> user4LocationY
+//        }
     }
 
     /**
@@ -850,10 +874,10 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         }
         if (currentNextUserNum == MINE) {
             Log.i("Poker", "輪到我了 pass count : $passCount")
-            if (passCount == 3){
-                showMinePassButtonAndPlayCardButton.value = Pair(View.VISIBLE,View.GONE)
-            }else{
-                showMinePassButtonAndPlayCardButton.value = Pair(View.VISIBLE,View.VISIBLE)
+            if (passCount == 3) {
+                showMinePassButtonAndPlayCardButton.value = Pair(View.VISIBLE, View.GONE)
+            } else {
+                showMinePassButtonAndPlayCardButton.value = Pair(View.VISIBLE, View.VISIBLE)
             }
             checkPassCount()
             return
@@ -870,19 +894,21 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         }
         currentPlayCardDataList.clear()
         currentPlayCardDataList = cardList.toMutableList()
-        cardList.sortWith{ o1,o2->
+        cardList.sortWith { o1, o2 ->
             o1.cardValue - o2.cardValue
         }
         for ((index, card) in cardList.withIndex()) {
-            card.targetX = getPlayCardTargetX(currentNextUserNum, index)
-            card.targetY = getPlayCardTargetY(currentNextUserNum, index)
+            card.targetX = getPlayCardTargetX(index, cardList.size)
+            card.targetY = getPlayCardTargetY(cardList.size)
             startShowingUserCards.value = Pair(card, index == cardList.size - 1)
         }
         passCount = 0
         allAlreadyShowingCardList.addAll(currentPlayCardDataList)
         PokerLogicTool.countLeftCards(getUserCardList(currentNextUserNum), cardList)
-        Log.i("Poker",
-            "user$currentNextUserNum 剩餘的卡牌數量 : ${getUserCardList(currentNextUserNum).size}")
+        Log.i(
+            "Poker",
+            "user$currentNextUserNum 剩餘的卡牌數量 : ${getUserCardList(currentNextUserNum).size}"
+        )
         showUserLeftCardLiveData.value =
             Pair(getUserCardList(currentNextUserNum).size, currentNextUserNum)
         countNextPlayer()
@@ -971,26 +997,29 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             return mutableListOf(PokerLogicTool.getMinSingleCard(userCardList))
 
         }
-        if (currentCardType == STRAIGHT_FLUSH){
+        if (currentCardType == STRAIGHT_FLUSH) {
             return PokerLogicTool.searchForStraightFlushCompare(
                 userCardList,
                 currentPlayCardDataList
             )
         }
-        if (currentCardType == FOUR_OF_KIND){
+        if (currentCardType == FOUR_OF_KIND) {
             return PokerLogicTool.searchForFourOfKindCompare(
                 userCardList,
                 currentPlayCardDataList
             )
         }
-        if ((myCardList.size <= 8 || user2CardList.size <= 8 || user3CardList.size <= 8 || user4CardList.size <= 8)){
+        if ((myCardList.size <= 8 || user2CardList.size <= 8 || user3CardList.size <= 8 || user4CardList.size <= 8)) {
             val straightFlush = PokerLogicTool.searchForStraightFlushNew(userCardList)
-            if (straightFlush.isNotEmpty()){
+            if (straightFlush.isNotEmpty()) {
                 return straightFlush[Random().nextInt(straightFlush.size)]
             }
             val fourOfKind = PokerLogicTool.searchForFourOfKindNew(userCardList)
-            if (fourOfKind.isNotEmpty()){
-                return fourOfKind[Random().nextInt(fourOfKind.size)]
+
+            if (fourOfKind.isNotEmpty()) {
+                val list = fourOfKind[Random().nextInt(fourOfKind.size)]
+                list.add(PokerLogicTool.getMinCard(userCardList))
+                return list
             }
         }
 
@@ -1039,7 +1068,21 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             showErrorMsg(application.getString(R.string.can_not_play_card))
             return
         }
-        showMinePassButtonAndPlayCardButton.value = Pair(View.GONE,View.GONE)
+        if (isThreeOfClubInMyHand) {
+            var isHasThreeOfClub = false
+            for (data in mineSelectedCardList) {
+                if (data.cardValue == POKER_3) {
+                    isHasThreeOfClub = true
+                }
+            }
+            if (!isHasThreeOfClub) {
+                showErrorMsg(application.getString(R.string.need_three_club))
+                return
+            }
+            isThreeOfClubInMyHand = false
+        }
+
+        showMinePassButtonAndPlayCardButton.value = Pair(View.GONE, View.GONE)
         currentCardType = PokerLogicTool.checkCardsType(mineSelectedCardList)
         currentPlayCardDataList = mineSelectedCardList.toMutableList()
         allAlreadyShowingCardList.addAll(currentPlayCardDataList)
@@ -1047,8 +1090,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         countNextPlayer()
         Log.i("Poker", "我出的手排數量 size : ${mineSelectedCardList.size}")
         for ((index, card) in mineSelectedCardList.withIndex()) {
-            card.targetX = getPlayCardTargetX(2, index)
-            card.targetY = getPlayCardTargetY(1, index)
+            card.targetX = getPlayCardTargetX(index, mineSelectedCardList.size)
+            card.targetY = getPlayCardTargetY(mineSelectedCardList.size)
             Log.i(
                 "Poker",
                 "index == mineSelectedCardList.size - 1 , index : $index , ${index == mineSelectedCardList.size - 1}"
@@ -1108,10 +1151,10 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         doPass()
         countNextPlayer()
         onPlayCardComplete()
-        showMinePassButtonAndPlayCardButton.value = Pair(View.GONE,View.GONE)
+        showMinePassButtonAndPlayCardButton.value = Pair(View.GONE, View.GONE)
         for (data in mineSelectedCardList) {
-            for (card in myCardList){
-                if (data.cardValue == card.cardValue && data.cardType == card.cardType){
+            for (card in myCardList) {
+                if (data.cardValue == card.cardValue && data.cardType == card.cardType) {
                     data.isSelected = false
                     bringAllSelectedCardLiveData.value = data
                 }
@@ -1130,13 +1173,17 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
 
     fun onPlayAgainClickListener() {
         currentPlayCardDataList.clear()
-        for (data in allCardList){
+        for (data in allCardList) {
             removeAllCardLiveData.value = data
         }
         allCardList.clear()
         allCardList.addAll(Tool.getAllCardList())
         startToShowRefreshCardAnimation()
         hideUserLeftCardLiveData.value = View.GONE
+        showTotalAmount.value = Pair(UserDataTool.getUserCashAmount(),1)
+        showTotalAmount.value = Pair(UserDataTool.getBot2CashAmount(),2)
+        showTotalAmount.value = Pair(UserDataTool.getBot3CashAmount(),3)
+        showTotalAmount.value = Pair(UserDataTool.getBot4CashAmount(),4)
     }
 
 

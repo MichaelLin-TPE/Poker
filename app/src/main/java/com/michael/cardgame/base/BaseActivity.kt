@@ -2,9 +2,10 @@ package com.michael.cardgame.base
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.michael.cardgame.big_two.BigTwoActivity
 
 open class BaseActivity : AppCompatActivity() {
 
@@ -12,6 +13,10 @@ open class BaseActivity : AppCompatActivity() {
 
     fun <T : ViewModel> getViewModel(viewModel: Class<T>): T {
         return ViewModelProvider(this, viewModelFactory)[viewModel]
+    }
+
+    fun setBindingView(resId:Int) : ViewDataBinding{
+        return DataBindingUtil.setContentView(this,resId)
     }
 
     fun <T : BaseActivity> goToPage(activity: Class<T>) {
