@@ -71,6 +71,25 @@ class BigTwoActivity : BaseActivity() {
     }
 
     private fun handleLiveData() {
+
+        viewModel.showUserName.observe(this){
+            Log.i("Poker","member : ${it.second}")
+            when(it.second){
+                1 ->{
+                    binding.tvUser4Name.text = it.first
+                }
+                2 ->{
+                    binding.tvUser1Name.text = it.first
+                }
+                3 ->{
+                    binding.tvUser2Name.text = it.first
+                }
+                else ->{
+                    binding.tvUser3Name.text = it.first
+                }
+            }
+        }
+
         viewModel.showTotalAmount.observe(this){
             Log.i("Poker","member : ${it.second}")
             when(it.second){

@@ -11,7 +11,7 @@ data class CardData(
     val centerImage: Int,
     var targetX: Float,
     var targetY: Float,
-    var cardView: View?,
+    @Transient var cardView: View?,
     var sid:Int,
     var isSelected:Boolean = false
 ) : Serializable

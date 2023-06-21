@@ -7,6 +7,7 @@ import com.michael.cardgame.R
 import com.michael.cardgame.base.BaseActivity
 import com.michael.cardgame.big_two.BigTwoActivity
 import com.michael.cardgame.databinding.ActivityHomeBinding
+import com.michael.cardgame.tool.SpeechTool
 
 class HomeActivity : BaseActivity() {
 
@@ -19,7 +20,7 @@ class HomeActivity : BaseActivity() {
         binding = DataBindingUtil.setContentView(this,R.layout.activity_home)
         viewModel = getViewModel(HomeViewModel::class.java)
 
-
+        SpeechTool.init(this)
         handleLiveData()
         initView()
     }

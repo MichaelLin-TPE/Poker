@@ -4,5 +4,6 @@ import java.io.Serializable
 
 data class LeftUserCardListData(
     val cardList : MutableList<CardData>,
-    val userNum : Int
+    val userNum : Int,
+    val userName:String
 ) : Serializable

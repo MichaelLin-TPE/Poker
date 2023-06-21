@@ -28,14 +28,28 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toTopOf="@id/iv_user2"
         app:layout_constraintTop_toBottomOf="@id/title" />
-    
+
+    <com.michael.cardgame.custom.CardTextView
+        android:id="@+id/tv_user1_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Michael"
+        android:textColor="@color/white"
+        android:layout_marginStart="5dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@id/iv_user1"
+        app:layout_constraintBottom_toBottomOf="@id/iv_user1"
+        app:layout_constraintLeft_toRightOf="@id/iv_user1"/>
+
     <LinearLayout
         android:id="@+id/user1_card_list_view"
         android:layout_marginStart="20dp"
         app:layout_constraintTop_toTopOf="@id/iv_user1"
         app:layout_constraintBottom_toBottomOf="@id/iv_user1"
-        app:layout_constraintLeft_toRightOf="@id/iv_user1"
-        app:layout_constraintRight_toLeftOf="@id/tv_user4_check"
+        app:layout_constraintLeft_toRightOf="@id/tv_user1_name"
+        app:layout_constraintRight_toRightOf="parent"
         android:layout_marginEnd="10dp"
         android:orientation="horizontal"
         android:layout_width="0dp"
@@ -43,19 +57,6 @@
 
     </LinearLayout>
 
-    <com.michael.cardgame.custom.CardTextView
-        android:id="@+id/tv_user1_check"
-        android:text="@string/check"
-        app:layout_constraintTop_toTopOf="@id/iv_user1"
-        app:layout_constraintBottom_toBottomOf="@id/iv_user1"
-        app:layout_constraintRight_toRightOf="parent"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:visibility="invisible"
-        android:textColor="@color/white"
-        android:layout_marginEnd="15dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
 
     <com.michael.cardgame.custom.CardTextView
         android:id="@+id/tv_user1_win"
@@ -64,7 +65,7 @@
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="@id/iv_user1"
         app:layout_constraintBottom_toBottomOf="@id/iv_user1"
-        app:layout_constraintLeft_toRightOf="@id/iv_user1"
+        app:layout_constraintLeft_toRightOf="@id/tv_user1_name"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/white"
@@ -84,13 +85,28 @@
         app:layout_constraintTop_toBottomOf="@id/iv_user1" />
 
     <com.michael.cardgame.custom.CardTextView
+        android:id="@+id/tv_user2_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Michael"
+        android:textColor="@color/white"
+        android:layout_marginStart="5dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@id/iv_user2"
+        app:layout_constraintBottom_toBottomOf="@id/iv_user2"
+        app:layout_constraintLeft_toRightOf="@id/iv_user2"/>
+
+
+    <com.michael.cardgame.custom.CardTextView
         android:id="@+id/tv_user2_win"
         android:text="@string/win"
         android:layout_marginStart="20dp"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="@id/iv_user2"
         app:layout_constraintBottom_toBottomOf="@id/iv_user2"
-        app:layout_constraintLeft_toRightOf="@id/iv_user2"
+        app:layout_constraintLeft_toRightOf="@id/tv_user2_name"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/white"
@@ -104,28 +120,14 @@
         app:layout_constraintTop_toTopOf="@id/iv_user2"
         android:layout_marginStart="20dp"
         app:layout_constraintBottom_toBottomOf="@id/iv_user2"
-        app:layout_constraintLeft_toRightOf="@id/iv_user2"
-        app:layout_constraintRight_toLeftOf="@id/tv_user4_check"
+        app:layout_constraintLeft_toRightOf="@id/tv_user2_name"
+        app:layout_constraintRight_toRightOf="parent"
         android:layout_marginEnd="10dp"
         android:orientation="horizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content">
 
     </LinearLayout>
-
-    <com.michael.cardgame.custom.CardTextView
-        android:id="@+id/tv_user2_check"
-        android:text="@string/check"
-        app:layout_constraintTop_toTopOf="@id/iv_user2"
-        app:layout_constraintBottom_toBottomOf="@id/iv_user2"
-        app:layout_constraintRight_toRightOf="parent"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:visibility="invisible"
-        android:textColor="@color/white"
-        android:layout_marginEnd="15dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
 
     <ImageView
         android:id="@+id/iv_user3"
@@ -138,13 +140,28 @@
         app:layout_constraintTop_toBottomOf="@id/iv_user2" />
 
     <com.michael.cardgame.custom.CardTextView
+        android:id="@+id/tv_user3_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Michael"
+        android:textColor="@color/white"
+        android:layout_marginStart="5dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@id/iv_user3"
+        app:layout_constraintBottom_toBottomOf="@id/iv_user3"
+        app:layout_constraintLeft_toRightOf="@id/iv_user3"/>
+
+
+    <com.michael.cardgame.custom.CardTextView
         android:id="@+id/tv_user3_win"
         android:text="@string/win"
         android:layout_marginStart="20dp"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="@id/iv_user3"
         app:layout_constraintBottom_toBottomOf="@id/iv_user3"
-        app:layout_constraintLeft_toRightOf="@id/iv_user3"
+        app:layout_constraintLeft_toRightOf="@id/tv_user3_name"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/white"
@@ -158,8 +175,8 @@
         android:layout_marginStart="20dp"
         app:layout_constraintTop_toTopOf="@id/iv_user3"
         app:layout_constraintBottom_toBottomOf="@id/iv_user3"
-        app:layout_constraintLeft_toRightOf="@id/iv_user3"
-        app:layout_constraintRight_toLeftOf="@id/tv_user4_check"
+        app:layout_constraintLeft_toRightOf="@id/tv_user3_name"
+        app:layout_constraintRight_toRightOf="parent"
         android:layout_marginEnd="10dp"
         android:orientation="horizontal"
         android:layout_width="0dp"
@@ -167,19 +184,6 @@
 
     </LinearLayout>
 
-    <com.michael.cardgame.custom.CardTextView
-        android:id="@+id/tv_user3_check"
-        android:text="@string/check"
-        app:layout_constraintTop_toTopOf="@id/iv_user3"
-        app:layout_constraintBottom_toBottomOf="@id/iv_user3"
-        app:layout_constraintRight_toRightOf="parent"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:visibility="invisible"
-        android:textColor="@color/white"
-        android:layout_marginEnd="15dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
 
     <ImageView
         android:id="@+id/iv_user4"
@@ -192,13 +196,27 @@
         app:layout_constraintTop_toBottomOf="@id/iv_user3" />
 
     <com.michael.cardgame.custom.CardTextView
+        android:id="@+id/tv_user4_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Michael"
+        android:textColor="@color/white"
+        android:layout_marginStart="5dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@id/iv_user4"
+        app:layout_constraintBottom_toBottomOf="@id/iv_user4"
+        app:layout_constraintLeft_toRightOf="@id/iv_user4"/>
+
+    <com.michael.cardgame.custom.CardTextView
         android:id="@+id/tv_user4_win"
         android:text="@string/win"
         android:layout_marginStart="20dp"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="@id/iv_user4"
         app:layout_constraintBottom_toBottomOf="@id/iv_user4"
-        app:layout_constraintLeft_toRightOf="@id/iv_user4"
+        app:layout_constraintLeft_toRightOf="@id/tv_user4_name"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/white"
@@ -212,8 +230,8 @@
         android:layout_marginStart="20dp"
         app:layout_constraintTop_toTopOf="@id/iv_user4"
         app:layout_constraintBottom_toBottomOf="@id/iv_user4"
-        app:layout_constraintLeft_toRightOf="@id/iv_user4"
-        app:layout_constraintRight_toLeftOf="@id/tv_user4_check"
+        app:layout_constraintLeft_toRightOf="@id/tv_user4_name"
+        app:layout_constraintRight_toRightOf="parent"
         android:layout_marginEnd="10dp"
         android:orientation="horizontal"
         android:layout_width="0dp"
@@ -221,19 +239,6 @@
 
     </LinearLayout>
 
-    <com.michael.cardgame.custom.CardTextView
-        android:id="@+id/tv_user4_check"
-        android:text="@string/check"
-        app:layout_constraintTop_toTopOf="@id/iv_user4"
-        app:layout_constraintBottom_toBottomOf="@id/iv_user4"
-        app:layout_constraintRight_toRightOf="parent"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:visibility="invisible"
-        android:textColor="@color/white"
-        android:layout_marginEnd="15dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
 
     <com.michael.cardgame.custom.CardTextView
         android:id="@+id/tv_confirm"

@@ -56,6 +56,21 @@ object Tool {
         return decimalFormat.format(value)
     }
 
+    fun getNameArray() : MutableList<String>{
+        val dataList = mutableListOf<String>()
+        dataList.add("飛飛")
+        dataList.add("賭神")
+        dataList.add("小刀")
+        dataList.add("無花果")
+        dataList.add("涼糖")
+        dataList.add("五月花")
+        dataList.add("赤司")
+        dataList.add("火神")
+        dataList.add("黃賴")
+        dataList.add("影子")
+        return dataList
+    }
+
     fun getAllCardList(): MutableList<CardData> {
         val list = mutableListOf<CardData>()
         list.add(CardData("A", R.drawable.ic_clubs, POKER_A, POKER_CLUBS,R.drawable.ic_clubs,0f,0f,null,0))
@@ -127,7 +142,7 @@ object Tool {
     }
 
     fun showToast(msg: String) {
-        Toast.makeText(getContext(),msg,Toast.LENGTH_LONG).show()
+        Toast.makeText(getContext(),msg,Toast.LENGTH_SHORT).show()
     }
 
     fun getScreenWidth(activity:Activity) : Int{

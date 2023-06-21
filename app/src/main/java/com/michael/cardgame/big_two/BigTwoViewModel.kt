@@ -36,6 +36,7 @@ import com.michael.cardgame.constants.Constants.USER_2
 import com.michael.cardgame.constants.Constants.USER_3
 import com.michael.cardgame.constants.Constants.USER_4
 import com.michael.cardgame.tool.PokerLogicTool
+import com.michael.cardgame.tool.SpeechTool
 import com.michael.cardgame.tool.Tool
 import com.michael.cardgame.tool.Tool.convertDp
 import com.michael.cardgame.tool.UserDataTool
@@ -71,6 +72,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
     val removeAllCardLiveData = MutableLiveData<CardData>()
     val showUserPhotoLiveData = MutableLiveData<Int>()
     val showTotalAmount = MutableLiveData<Pair<Int,Int>>()
+    val showUserName = MutableLiveData<Pair<String,Int>>()
     private val allCardList = Tool.getAllCardList()
     private var screenWidth = 0
     private var screenHeight = 0
@@ -94,7 +96,9 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
     private var mineSelectedCardList = mutableListOf<CardData>() //我自己選的牌組
     private var allAlreadyShowingCardList = mutableListOf<CardData>()
     private var passCount = 0 //計算本ROUND的Pass數量
-
+    private var bot2Name = ""
+    private var bot3Name = ""
+    private var bot4Name = ""
 
     init {
         showUserPhotoLiveData.value = UserDataTool.getUserPhoto()
@@ -107,6 +111,17 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         showTotalAmount.value = Pair(UserDataTool.getBot2CashAmount(),2)
         showTotalAmount.value = Pair(UserDataTool.getBot3CashAmount(),3)
         showTotalAmount.value = Pair(UserDataTool.getBot4CashAmount(),4)
+        showUserName.value = Pair(UserDataTool.getUserName(),1)
+        val nameList = Tool.getNameArray()
+        bot2Name = nameList[Random().nextInt(nameList.size)]
+        nameList.remove(bot2Name)
+        bot3Name = nameList[Random().nextInt(nameList.size)]
+        nameList.remove(bot3Name)
+        bot4Name = nameList[Random().nextInt(nameList.size)]
+        showUserName.value = Pair(bot2Name,2)
+        showUserName.value = Pair(bot3Name,3)
+        showUserName.value = Pair(bot4Name,4)
+
         Log.i("Poker","mine : ${UserDataTool.getUserCashAmount()} , bot2 : ${UserDataTool.getBot2CashAmount()} , bot3 : ${UserDataTool.getBot3CashAmount()} , bot4 : ${UserDataTool.getBot4CashAmount()}")
         startToShowRefreshCardAnimation()
     }
@@ -379,6 +394,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
 
     private fun startGame() {
         showInformationLiveData.value = application.getString(R.string.show_three_of_club)
+        SpeechTool.makeSpeech(application.getString(R.string.show_three_of_club))
     }
 
 
@@ -676,6 +692,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             currentPlayCardDataList.addAll(straightFlushList)
             allAlreadyShowingCardList.addAll(currentPlayCardDataList)
             currentCardType = STRAIGHT_FLUSH
+            makeItSpeech()
             return
         }
         //尋找鐵支且跟者梅花三
@@ -704,6 +721,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             currentPlayCardDataList.addAll(fourOfKindList)
             allAlreadyShowingCardList.addAll(currentPlayCardDataList)
             currentCardType = FOUR_OF_KIND
+            makeItSpeech()
             return
         }
         //尋找葫蘆且跟者梅花三
@@ -724,6 +742,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             currentPlayCardDataList.addAll(fullHouseListWith3Clubs)
             allAlreadyShowingCardList.addAll(currentPlayCardDataList)
             currentCardType = FULL_HOUSE
+            makeItSpeech()
             return
         }
         //尋找順子且有梅花三
@@ -756,6 +775,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             currentPlayCardDataList.addAll(straightFlushList)
             allAlreadyShowingCardList.addAll(currentPlayCardDataList)
             currentCardType = STRAIGHT
+            makeItSpeech()
             return
         }
 
@@ -776,7 +796,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             currentPlayCardDataList.addAll(twoPairListWith3Clubs)
             allAlreadyShowingCardList.addAll(currentPlayCardDataList)
             currentCardType = TWO_PAIR
-
+            makeItSpeech()
             return
         }
         val singleCardWithThree =
@@ -794,6 +814,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         currentPlayCardDataList.addAll(list)
         allAlreadyShowingCardList.addAll(currentPlayCardDataList)
         currentCardType = SINGLE
+        makeItSpeech()
         showCardInfo(list)
 
     }
@@ -841,7 +862,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
     }
 
     fun onPlayCardComplete() {
-        mCompositeSubscription.add(Completable.timer(500, TimeUnit.MILLISECONDS)
+        mCompositeSubscription.add(Completable.timer(1000, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
@@ -853,22 +874,26 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
 
     private fun otherUserPlayCard() {
         if (myCardList.isEmpty()) {
-            Tool.showToast(application.getString(R.string.winner) + " : User1")
+            Tool.showToast(application.getString(R.string.winner) + " : ${UserDataTool.getUserName()}")
+            SpeechTool.makeSpeech(application.getString(R.string.winner) + " : ${UserDataTool.getUserName()}")
             showConfirmDialog()
             return
         }
         if (user2CardList.isEmpty()) {
-            Tool.showToast(application.getString(R.string.winner) + " : User2")
+            Tool.showToast(application.getString(R.string.winner) + " : $bot2Name")
+            SpeechTool.makeSpeech(application.getString(R.string.winner) + " : $bot2Name")
             showConfirmDialog()
             return
         }
         if (user3CardList.isEmpty()) {
-            Tool.showToast(application.getString(R.string.winner) + " : User3")
+            Tool.showToast(application.getString(R.string.winner) + " : $bot3Name")
+            SpeechTool.makeSpeech(application.getString(R.string.winner) + " : $bot3Name")
             showConfirmDialog()
             return
         }
         if (user4CardList.isEmpty()) {
-            Tool.showToast(application.getString(R.string.winner) + " : User4")
+            Tool.showToast(application.getString(R.string.winner) + " : $bot4Name")
+            SpeechTool.makeSpeech(application.getString(R.string.winner) + " : $bot4Name")
             showConfirmDialog()
             return
         }
@@ -887,13 +912,16 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         if (cardList.isEmpty()) {
             showPassContentLiveData.value = currentNextUserNum
             doPass()
+            SpeechTool.makeSpeech("Pass")
             Log.i("Poker", "user$currentNextUserNum : Pass count : $passCount")
             countNextPlayer()
             onPlayCardComplete()
             return
         }
+
         currentPlayCardDataList.clear()
         currentPlayCardDataList = cardList.toMutableList()
+        makeItSpeech()
         cardList.sortWith { o1, o2 ->
             o1.cardValue - o2.cardValue
         }
@@ -914,16 +942,56 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         countNextPlayer()
     }
 
+    private fun makeItSpeech() {
+        when(currentCardType){
+            STRAIGHT_FLUSH->SpeechTool.makeSpeech("同花順")
+            FOUR_OF_KIND ->SpeechTool.makeSpeech("鐵支")
+            FULL_HOUSE->fullHouseSpeech()
+            STRAIGHT->SpeechTool.makeSpeech("順子")
+            TWO_PAIR->twoPairSpeech()
+            SINGLE->singleSpeech()
+        }
+    }
+
+    private fun singleSpeech() {
+        val num = currentPlayCardDataList[0].cardValue
+        if (num == POKER_A){
+            SpeechTool.makeSpeech("Ace")
+        }else{
+            SpeechTool.makeSpeech("$num")
+        }
+    }
+
+    private fun twoPairSpeech() {
+        val num = currentPlayCardDataList[0].cardValue
+        if (num == POKER_A){
+            SpeechTool.makeSpeech("Ace胚")
+        }else{
+            SpeechTool.makeSpeech("${num}胚")
+        }
+
+    }
+
+    private fun fullHouseSpeech() {
+        val num = PokerLogicTool.checkFullHouseNum(currentPlayCardDataList)
+        if (num == POKER_A){
+            SpeechTool.makeSpeech("Ace葫蘆")
+        }else{
+            SpeechTool.makeSpeech("${num}葫蘆")
+        }
+
+    }
+
     private fun showConfirmDialog() {
         val list = ArrayList<LeftUserCardListData>()
 
-        list.add(LeftUserCardListData(myCardList, MINE))
+        list.add(LeftUserCardListData(myCardList, MINE,UserDataTool.getUserName()))
 
-        list.add(LeftUserCardListData(user2CardList, USER_2))
+        list.add(LeftUserCardListData(user2CardList, USER_2,bot2Name))
 
-        list.add(LeftUserCardListData(user3CardList, USER_3))
+        list.add(LeftUserCardListData(user3CardList, USER_3,bot3Name))
 
-        list.add(LeftUserCardListData(user4CardList, USER_4))
+        list.add(LeftUserCardListData(user4CardList, USER_4,bot4Name))
 
         showConfirmDialogLiveData.value = list
     }
@@ -1086,7 +1154,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         currentCardType = PokerLogicTool.checkCardsType(mineSelectedCardList)
         currentPlayCardDataList = mineSelectedCardList.toMutableList()
         allAlreadyShowingCardList.addAll(currentPlayCardDataList)
-
+        makeItSpeech()
         countNextPlayer()
         Log.i("Poker", "我出的手排數量 size : ${mineSelectedCardList.size}")
         for ((index, card) in mineSelectedCardList.withIndex()) {
@@ -1148,6 +1216,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
     }
 
     fun onPassClickListener() {
+        SpeechTool.makeSpeech("Pass")
         doPass()
         countNextPlayer()
         onPlayCardComplete()

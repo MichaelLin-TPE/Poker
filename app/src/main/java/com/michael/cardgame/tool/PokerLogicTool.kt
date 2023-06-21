@@ -1237,12 +1237,9 @@ object PokerLogicTool {
         for ((index, card) in cardList.withIndex()) {
             for (position in index + 1 until cardList.size) {
                 val cardData = cardList[position]
-                if (cardData.cardValue == 1 && card.cardValue == 13) {
-                    collectCount++
-                    continue
-                }
                 if (cardData.cardValue > card.cardValue && cardData.cardValue - card.cardValue == 1 && cardData.cardType == card.cardType) {
                     collectCount++
+                    break
                 }
             }
         }
@@ -1264,12 +1261,9 @@ object PokerLogicTool {
         for ((index, card) in cardList.withIndex()) {
             for (position in index + 1 until cardList.size) {
                 val cardData = cardList[position]
-                if (cardData.cardValue == 1 && card.cardValue == 13) {
-                    collectCount++
-                    continue
-                }
                 if (cardData.cardValue > card.cardValue && cardData.cardValue - card.cardValue == 1) {
                     collectCount++
+                    break
                 }
             }
         }
@@ -1414,6 +1408,28 @@ object PokerLogicTool {
             }
         }
         return straightList
+    }
+
+    fun checkFullHouseNum(currentPlayCardDataList: MutableList<CardData>): Int {
+        Log.i("Poker","葫蘆張數 : ${currentPlayCardDataList.size}")
+        var sameCount = 0
+        var num = 0
+        for (card in currentPlayCardDataList){
+            Log.i("Poker","cardValue : ${card.cardValue}")
+            for (card2 in currentPlayCardDataList){
+                if (card.cardValue == card2.cardValue){
+                    sameCount ++
+                }
+            }
+            Log.i("Poker","cardValue : ${card.cardValue} , sameCount : $sameCount")
+            if (sameCount == 3){
+                num = card.cardValue
+                break
+            }else{
+                sameCount = 0
+            }
+        }
+        return num
     }
 
 }

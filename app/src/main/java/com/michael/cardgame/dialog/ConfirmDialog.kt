@@ -67,6 +67,11 @@ class ConfirmDialog : DialogFragment() {
         val ivUser2Photo = view.findViewById<ImageView>(R.id.iv_user2)
         val ivUser3Photo = view.findViewById<ImageView>(R.id.iv_user3)
         val ivUser4Photo = view.findViewById<ImageView>(R.id.iv_user4)
+        val tvUser1Name = view.findViewById<TextView>(R.id.tv_user1_name)
+        val tvUser2Name = view.findViewById<TextView>(R.id.tv_user2_name)
+        val tvUser3Name = view.findViewById<TextView>(R.id.tv_user3_name)
+        val tvUser4Name = view.findViewById<TextView>(R.id.tv_user4_name)
+
         ivUser1Photo.setImageResource(UserDataTool.getUserPhoto())
         ivUser2Photo.setImageResource(UserDataTool.getBot2Photo())
         ivUser3Photo.setImageResource(UserDataTool.getBot3Photo())
@@ -92,24 +97,28 @@ class ConfirmDialog : DialogFragment() {
 
         for (data in dataList) {
             if (data.userNum == MINE) {
+                tvUser1Name.text = data.userName
                 user1Win.visibility = if (data.cardList.isNotEmpty()) View.GONE else View.VISIBLE
                 user1Amount =
                     if (user1Win.visibility == View.VISIBLE) 0 else checkLostAmount(data.cardList)
                 addView(user1ListView, data.cardList)
             }
             if (data.userNum == USER_2) {
+                tvUser2Name.text = data.userName
                 user2Win.visibility = if (data.cardList.isNotEmpty()) View.GONE else View.VISIBLE
                 user2Amount =
                     if (user2Win.visibility == View.VISIBLE) 0 else checkLostAmount(data.cardList)
                 addView(user2ListView, data.cardList)
             }
             if (data.userNum == USER_3) {
+                tvUser3Name.text = data.userName
                 user3Win.visibility = if (data.cardList.isNotEmpty()) View.GONE else View.VISIBLE
                 user3Amount =
                     if (user3Win.visibility == View.VISIBLE) 0 else checkLostAmount(data.cardList)
                 addView(user3ListView, data.cardList)
             }
             if (data.userNum == USER_4) {
+                tvUser4Name.text = data.userName
                 user4Win.visibility = if (data.cardList.isNotEmpty()) View.GONE else View.VISIBLE
                 user4Amount =
                     if (user4Win.visibility == View.VISIBLE) 0 else checkLostAmount(data.cardList)
@@ -126,7 +135,7 @@ class ConfirmDialog : DialogFragment() {
             UserDataTool.saveBot3CashAmount(UserDataTool.getBot3CashAmount() - user3Amount)
             UserDataTool.saveBot4CashAmount(UserDataTool.getBot4CashAmount() - user4Amount)
             user1Win.text =
-                "${getString(R.string.win)} , +${Tool.formatThousand(abs(user2Amount + user3Amount + user4Amount))}"
+                "${getString(R.string.win)} +${Tool.formatThousand(abs(user2Amount + user3Amount + user4Amount))}"
         }
         if (isUser2Win) {
             UserDataTool.saveUserCashAmount(UserDataTool.getUserCashAmount() - user1Amount)
@@ -134,7 +143,7 @@ class ConfirmDialog : DialogFragment() {
             UserDataTool.saveBot3CashAmount(UserDataTool.getBot3CashAmount() - user3Amount)
             UserDataTool.saveBot4CashAmount(UserDataTool.getBot4CashAmount() - user4Amount)
             user2Win.text =
-                "${getString(R.string.win)} , +${Tool.formatThousand(abs(user1Amount + user3Amount + user4Amount))}"
+                "${getString(R.string.win)}  +${Tool.formatThousand(abs(user1Amount + user3Amount + user4Amount))}"
         }
         if (isUser3Win) {
             UserDataTool.saveUserCashAmount(UserDataTool.getUserCashAmount() - user1Amount)
@@ -142,7 +151,7 @@ class ConfirmDialog : DialogFragment() {
             UserDataTool.saveBot3CashAmount(user1Amount + user2Amount + user4Amount + UserDataTool.getBot2CashAmount())
             UserDataTool.saveBot4CashAmount(UserDataTool.getBot4CashAmount() - user4Amount)
             user3Win.text =
-                "${getString(R.string.win)} , +${Tool.formatThousand(abs(user1Amount + user2Amount + user4Amount))}"
+                "${getString(R.string.win)}  +${Tool.formatThousand(abs(user1Amount + user2Amount + user4Amount))}"
         }
         if (isUser4Win) {
             UserDataTool.saveUserCashAmount(UserDataTool.getUserCashAmount() - user1Amount)
@@ -150,7 +159,7 @@ class ConfirmDialog : DialogFragment() {
             UserDataTool.saveBot3CashAmount(UserDataTool.getBot3CashAmount() - user3Amount)
             UserDataTool.saveBot4CashAmount(user1Amount + user2Amount + user3Amount + UserDataTool.getBot2CashAmount())
             user4Win.text =
-                "${getString(R.string.win)} , +${Tool.formatThousand(abs(user2Amount + user3Amount + user1Amount))}"
+                "${getString(R.string.win)}  +${Tool.formatThousand(abs(user2Amount + user3Amount + user1Amount))}"
         }
 
 

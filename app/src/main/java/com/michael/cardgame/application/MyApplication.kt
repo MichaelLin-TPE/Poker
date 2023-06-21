@@ -1,6 +1,7 @@
 package com.weather.sunny.application
 
 import android.app.Application
+import com.michael.cardgame.tool.SpeechTool
 
 class MyApplication : Application() {
     companion object{
