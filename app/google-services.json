@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1075887756023",
+    "project_id": "casino-3ff04",
+    "storage_bucket": "casino-3ff04.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1075887756023:android:f28de18b87f6c9548739f2",
+        "android_client_info": {
+          "package_name": "com.michael.cardgame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1075887756023-fcbkbeg2v9rjlnv2tbq9m7saqcldpitp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.michael.cardgame",
+            "certificate_hash": "b0915413247b59844902cc86202d154ad2fc6347"
+          }
+        },
+        {
+          "client_id": "1075887756023-anr171s1fua3o1is2diu4oic1sgp8b3f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1qvbdHvPxgT6ebO4Sr3n3Vtnlr6sgwe8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1075887756023-anr171s1fua3o1is2diu4oic1sgp8b3f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

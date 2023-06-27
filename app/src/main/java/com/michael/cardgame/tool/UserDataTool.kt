@@ -58,4 +58,11 @@ object UserDataTool {
         CacheTool.putInt("user_photo_id",photoId)
     }
 
+    fun saveUserToken(token:String){
+        CacheTool.putString("token",token)
+    }
+    fun getUserToken():String = CacheTool.getString("token","")
+
+
+
 }
