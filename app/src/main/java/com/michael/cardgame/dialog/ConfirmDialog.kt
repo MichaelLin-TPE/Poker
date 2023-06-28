@@ -3,13 +3,14 @@ package com.michael.cardgame.dialog
 import android.app.Dialog
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.michael.cardgame.R
 import com.michael.cardgame.bean.CardData
 import com.michael.cardgame.bean.LeftUserCardListData
@@ -19,6 +20,7 @@ import com.michael.cardgame.constants.Constants.USER_2
 import com.michael.cardgame.constants.Constants.USER_3
 import com.michael.cardgame.constants.Constants.USER_4
 import com.michael.cardgame.custom.CardTextView
+import com.michael.cardgame.tool.FirebaseDAO
 import com.michael.cardgame.tool.Tool
 import com.michael.cardgame.tool.Tool.convertDp
 import com.michael.cardgame.tool.UserDataTool
@@ -53,7 +55,7 @@ class ConfirmDialog : DialogFragment() {
         dialog.window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
         val window = dialog.window
         val wlp = window?.attributes
-        wlp?.width = 650.convertDp()
+        wlp?.width = 700.convertDp()
         wlp?.height = 400.convertDp()
         window?.attributes = wlp
         return dialog
@@ -131,6 +133,9 @@ class ConfirmDialog : DialogFragment() {
         val isUser4Win = user4Win.visibility == View.VISIBLE
         if (isUser1Win) {
             UserDataTool.saveUserCashAmount(user2Amount + user3Amount + user4Amount + UserDataTool.getUserCashAmount())
+            val db = FirebaseDAO()
+            db.init(Firebase.firestore)
+            db.upDateMyCashAmount(UserDataTool.getUserCashAmount())
             UserDataTool.saveBot2CashAmount(UserDataTool.getBot2CashAmount() - user2Amount)
             UserDataTool.saveBot3CashAmount(UserDataTool.getBot3CashAmount() - user3Amount)
             UserDataTool.saveBot4CashAmount(UserDataTool.getBot4CashAmount() - user4Amount)

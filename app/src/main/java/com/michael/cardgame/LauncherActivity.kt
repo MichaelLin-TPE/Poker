@@ -29,7 +29,6 @@ class LauncherActivity : BaseActivity() {
     private lateinit var oneTapClient : SignInClient
     private lateinit var signInRequest : BeginSignInRequest
     private lateinit var auth : FirebaseAuth
-    private lateinit var db : FirebaseDAO
 
     override fun onStart() {
         super.onStart()
@@ -38,7 +37,7 @@ class LauncherActivity : BaseActivity() {
         if (currentUser != null){
             Log.i("Poker","已經是登入狀態了 email : ${currentUser.email}")
             binding.signInBtn.visibility = View.GONE
-            viewModel.onStartFlow(currentUser.email,db)
+            viewModel.onStartFlow(currentUser.email)
         }else{
             binding.signInBtn.visibility = View.VISIBLE
         }
@@ -48,8 +47,6 @@ class LauncherActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this,R.layout.activity_home_page)
         viewModel = getViewModel(LauncherViewModel::class.java)
-        db = FirebaseDAO()
-        db.init(Firebase.firestore)
         handleLiveData()
         initView()
     }
@@ -105,7 +102,7 @@ class LauncherActivity : BaseActivity() {
                                     binding.signInBtn.visibility = View.GONE
                                     auth = Firebase.auth
                                     val currentUser = auth.currentUser
-                                    viewModel.onStartFlow(currentUser?.email, db)
+                                    viewModel.onStartFlow(currentUser?.email)
                                     Log.i("Poker","FirebaseAuth successful token $idToken")
                                 }else{
                                     Log.i("Poker","FirebaseAuth fail ${it.exception}")

@@ -19,8 +19,9 @@ import androidx.databinding.DataBindingUtil
 import com.michael.cardgame.R
 import com.michael.cardgame.base.BaseActivity
 import com.michael.cardgame.bean.CardData
-import com.michael.cardgame.databinding.ActivityMainBinding
+import com.michael.cardgame.databinding.ActivityBigTwoBinding
 import com.michael.cardgame.dialog.ConfirmDialog
+import com.michael.cardgame.tool.SoundTool
 import com.michael.cardgame.tool.Tool
 import com.michael.cardgame.tool.Tool.convertDp
 import java.util.Random
@@ -28,15 +29,24 @@ import java.util.Random
 
 class BigTwoActivity : BaseActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityBigTwoBinding
     private lateinit var viewModel: BigTwoViewModel
     private var randomSingleCard: CardData? = null
 
+    override fun onStop() {
+        super.onStop()
+        SoundTool.stopBackgroundMusic()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SoundTool.playBackgroundMusic(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_big_two)
         viewModel = getViewModel(BigTwoViewModel::class.java)
-
 
         binding.rootView.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
@@ -71,6 +81,14 @@ class BigTwoActivity : BaseActivity() {
     }
 
     private fun handleLiveData() {
+
+        viewModel.playShufflingCardMusicLiveData.observe(this){
+            if (it){
+                SoundTool.playShufflingCardMusic(this@BigTwoActivity)
+            }else{
+                SoundTool.stopShufflingCardMusic()
+            }
+        }
 
         viewModel.showUserName.observe(this){
             Log.i("Poker","member : ${it.second}")
@@ -121,6 +139,9 @@ class BigTwoActivity : BaseActivity() {
         }
         viewModel.moveSingleCardLiveData.observe(this) {
             moveSingleCard(it)
+        }
+        viewModel.playDealCardLiveData.observe(this){
+            SoundTool.playDealCardMusic()
         }
         viewModel.moveBackSingleCardLiveData.observe(this) {
             moveBackCard(it)
@@ -333,7 +354,7 @@ class BigTwoActivity : BaseActivity() {
                 }
                 viewModel.dealMyNextCard()
             }
-            ?.setDuration(150)
+            ?.setDuration(200)
             ?.start()
     }
 

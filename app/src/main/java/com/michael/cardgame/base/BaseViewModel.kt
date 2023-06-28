@@ -2,12 +2,20 @@ package com.michael.cardgame.base
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.michael.cardgame.tool.FirebaseDAO
 import com.michael.cardgame.tool.Tool
 import io.reactivex.disposables.CompositeDisposable
 
 abstract class BaseViewModel(private val application: Application) : AndroidViewModel(application){
 
     protected val mCompositeSubscription = CompositeDisposable()
+    protected val db = FirebaseDAO()
+
+    init {
+        db.init(Firebase.firestore)
+    }
 
     open fun showErrorMsg(msg:String){
         Tool.showToast(msg)

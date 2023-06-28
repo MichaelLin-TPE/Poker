@@ -19,12 +19,12 @@ object SpeechTool : OnInitListener{
         if (status == TextToSpeech.SUCCESS){
             val result = tts.setLanguage(Locale.TRADITIONAL_CHINESE)
             isTextToSpeechInitSuccessful = !(result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED)
-            Log.i("Poker","建置完成")
+            Log.i("Poker","語音建置完成")
             if (isTextToSpeechInitSuccessful){
                 makeSpeech(speechMsg)
             }
         }else{
-            Log.i("Poker","建置失敗")
+            Log.i("Poker","語音建置失敗")
         }
     }
     private var speechMsg = ""

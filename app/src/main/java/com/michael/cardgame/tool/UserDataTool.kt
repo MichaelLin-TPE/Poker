@@ -62,7 +62,13 @@ object UserDataTool {
         CacheTool.putString("token",token)
     }
     fun getUserToken():String = CacheTool.getString("token","")
-
+    fun saveEmail(email: String) {
+        CacheTool.putString("email",email)
+    }
+    fun getEmail():String = CacheTool.getString("email","")
+    fun saveDiamondCount(diamondCount: Int) {
+        CacheTool.putInt("user_diamond_count",diamondCount)
+    }
 
 
 }

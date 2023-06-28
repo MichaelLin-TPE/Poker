@@ -73,6 +73,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
     val showUserPhotoLiveData = MutableLiveData<Int>()
     val showTotalAmount = MutableLiveData<Pair<Int,Int>>()
     val showUserName = MutableLiveData<Pair<String,Int>>()
+    val playShufflingCardMusicLiveData = MutableLiveData<Boolean>()
+    val playDealCardLiveData = MutableLiveData<Boolean>()
     private val allCardList = Tool.getAllCardList()
     private var screenWidth = 0
     private var screenHeight = 0
@@ -142,6 +144,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             card.targetY = startY + 75.convertDp() * row
             position++
         }
+        playShufflingCardMusicLiveData.value = true
         mCompositeSubscription.add(
             Observable.interval(50, TimeUnit.MILLISECONDS)
                 .zipWith(allCardList) { _, item -> item }
@@ -191,6 +194,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
 
     fun onCheckBringCardTogetherFinishedListener(plusValue: Float) {
         if (plusValue == 25.5f) {
+            playShufflingCardMusicLiveData.value = false
             pickRandomCard()
         }
     }
@@ -263,7 +267,6 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
                 (cardData.cardValue == POKER_11 && cardData.cardType == POKER_DIAMOND) ||
                 (cardData.cardValue == POKER_12 && cardData.cardType == POKER_HEART) ||
                 (cardData.cardValue == POKER_13 && cardData.cardType == POKER_SPADES)
-
     }
 
     /**
@@ -341,6 +344,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
 
     private fun dealCard() {
         if (dealCardIndex < allCardList.size) {
+            playDealCardLiveData.value = true
             dealCardLiveData.value = checkOrder()
             addIndex()
             dealCardIndex++
@@ -689,6 +693,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             }
             passCount = 0
             PokerLogicTool.countLeftCards(getUserCardList(userNum), straightFlushList)
+            showUserLeftCardLiveData.value =
+                Pair(getUserCardList(userNum).size, userNum)
             currentPlayCardDataList.addAll(straightFlushList)
             allAlreadyShowingCardList.addAll(currentPlayCardDataList)
             currentCardType = STRAIGHT_FLUSH
@@ -718,6 +724,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             }
             passCount = 0
             PokerLogicTool.countLeftCards(getUserCardList(userNum), fourOfKindList)
+            showUserLeftCardLiveData.value =
+                Pair(getUserCardList(userNum).size, userNum)
             currentPlayCardDataList.addAll(fourOfKindList)
             allAlreadyShowingCardList.addAll(currentPlayCardDataList)
             currentCardType = FOUR_OF_KIND
@@ -739,6 +747,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             }
             passCount = 0
             PokerLogicTool.countLeftCards(getUserCardList(userNum), fullHouseListWith3Clubs)
+            showUserLeftCardLiveData.value =
+                Pair(getUserCardList(userNum).size, userNum)
             currentPlayCardDataList.addAll(fullHouseListWith3Clubs)
             allAlreadyShowingCardList.addAll(currentPlayCardDataList)
             currentCardType = FULL_HOUSE
@@ -772,6 +782,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             }
             passCount = 0
             PokerLogicTool.countLeftCards(getUserCardList(userNum), straightFlushList)
+            showUserLeftCardLiveData.value =
+                Pair(getUserCardList(userNum).size, userNum)
             currentPlayCardDataList.addAll(straightFlushList)
             allAlreadyShowingCardList.addAll(currentPlayCardDataList)
             currentCardType = STRAIGHT
@@ -793,6 +805,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             }
             passCount = 0
             PokerLogicTool.countLeftCards(getUserCardList(userNum), twoPairListWith3Clubs)
+            showUserLeftCardLiveData.value =
+                Pair(getUserCardList(userNum).size, userNum)
             currentPlayCardDataList.addAll(twoPairListWith3Clubs)
             allAlreadyShowingCardList.addAll(currentPlayCardDataList)
             currentCardType = TWO_PAIR
@@ -811,6 +825,8 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         startShowingUserCards.value = Pair(singleCardWithThree, true)
         passCount = 0
         PokerLogicTool.countLeftCards(getUserCardList(userNum), list)
+        showUserLeftCardLiveData.value =
+            Pair(getUserCardList(userNum).size, userNum)
         currentPlayCardDataList.addAll(list)
         allAlreadyShowingCardList.addAll(currentPlayCardDataList)
         currentCardType = SINGLE
@@ -925,6 +941,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         cardList.sortWith { o1, o2 ->
             o1.cardValue - o2.cardValue
         }
+        playDealCardLiveData.value = true
         for ((index, card) in cardList.withIndex()) {
             card.targetX = getPlayCardTargetX(index, cardList.size)
             card.targetY = getPlayCardTargetY(cardList.size)
@@ -1080,11 +1097,13 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         if ((myCardList.size <= 8 || user2CardList.size <= 8 || user3CardList.size <= 8 || user4CardList.size <= 8)) {
             val straightFlush = PokerLogicTool.searchForStraightFlushNew(userCardList)
             if (straightFlush.isNotEmpty()) {
+                currentCardType = STRAIGHT_FLUSH
                 return straightFlush[Random().nextInt(straightFlush.size)]
             }
             val fourOfKind = PokerLogicTool.searchForFourOfKindNew(userCardList)
 
             if (fourOfKind.isNotEmpty()) {
+                currentCardType = FOUR_OF_KIND
                 val list = fourOfKind[Random().nextInt(fourOfKind.size)]
                 list.add(PokerLogicTool.getMinCard(userCardList))
                 return list
@@ -1157,6 +1176,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         makeItSpeech()
         countNextPlayer()
         Log.i("Poker", "我出的手排數量 size : ${mineSelectedCardList.size}")
+        playDealCardLiveData.value = true
         for ((index, card) in mineSelectedCardList.withIndex()) {
             card.targetX = getPlayCardTargetX(index, mineSelectedCardList.size)
             card.targetY = getPlayCardTargetY(mineSelectedCardList.size)

@@ -53,6 +53,7 @@ class UserPhotoAndNameConfirmDialog : DialogFragment() {
     private lateinit var adapter: PhotoAdapter
 
     private fun initView(view: View) {
+        isCancelable = false
         val rvList = view.findViewById<RecyclerView>(R.id.rv_photo_list)
         val edName = view.findViewById<EditText>(R.id.ed_name)
         val tvSubmit = view.findViewById<TextView>(R.id.tv_submit)
