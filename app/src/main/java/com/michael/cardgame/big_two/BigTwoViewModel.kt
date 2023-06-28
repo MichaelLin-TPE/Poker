@@ -1079,7 +1079,19 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
             }
             Log.i("Poker", "user${currentNextUserNum} 發單張")
             currentCardType = SINGLE
-            return mutableListOf(PokerLogicTool.getMinSingleCard(userCardList))
+
+            val singleCard = PokerLogicTool.searchForSingleCard(userCardList)
+            singleCard.sortWith{ o1,o2->
+                o1.cardValue - o2.cardValue
+            }
+            if (singleCard.size == 1 && singleCard[0].cardValue == POKER_2){
+                return singleCard
+            }
+            var card = singleCard[0]
+            if (card.cardValue == POKER_2){
+                card = singleCard[1]
+            }
+            return mutableListOf(card)
 
         }
         if (currentCardType == STRAIGHT_FLUSH) {
@@ -1147,6 +1159,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
         if (passCount == 3) {
             currentPlayCardDataList.clear()
         }
+        Log.i("Poker","要出幾張牌 : ${mineSelectedCardList.size}")
         val isAbleToPlayCard = PokerLogicTool.compareMyCardAndCurrentCard(
             mineSelectedCardList,
             currentPlayCardDataList
@@ -1262,6 +1275,7 @@ class BigTwoViewModel(private val application: Application) : BaseViewModel(appl
 
     fun onPlayAgainClickListener() {
         currentPlayCardDataList.clear()
+        mineSelectedCardList.clear()
         for (data in allCardList) {
             removeAllCardLiveData.value = data
         }

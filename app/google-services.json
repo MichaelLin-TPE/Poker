@@ -22,7 +22,15 @@
           }
         },
         {
-          "client_id": "1075887756023-anr171s1fua3o1is2diu4oic1sgp8b3f.apps.googleusercontent.com",
+          "client_id": "1075887756023-nvm5htnf9gd0dju3926vgsfb0o09b1b4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.michael.cardgame",
+            "certificate_hash": "29bfd94849f8cf871863b642e3ea98fa63300846"
+          }
+        },
+        {
+          "client_id": "1075887756023-iqj5db9vjdo676bg8o1m54kd2shasurp.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

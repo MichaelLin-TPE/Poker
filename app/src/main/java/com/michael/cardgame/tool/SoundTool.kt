@@ -42,7 +42,7 @@ object SoundTool {
     fun playBackgroundMusic(activity: Activity){
         if (backgroundMusic == null){
             backgroundMusic = MediaPlayer.create(activity,R.raw.bg_music)
-            backgroundMusic?.setVolume(0.7f,0.7f)
+            backgroundMusic?.setVolume(0.2f,0.2f)
             backgroundMusic?.isLooping = true
         }
         backgroundMusic?.start()

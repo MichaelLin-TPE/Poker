@@ -919,8 +919,9 @@ object PokerLogicTool {
         userCardList: MutableList<CardData>,
         currentPlayCardDataList: MutableList<CardData>
     ): MutableList<CardData> {
-        val twoPairList = searchForSpecificCard(userCardList,2)
-        if (twoPairList.size != 2 || currentPlayCardDataList.size != 2) {
+        val cardList = userCardList.toMutableList()
+        val twoPairList = searchForSpecificCard(cardList,2)
+        if (twoPairList.isEmpty() || currentPlayCardDataList.size != 2) {
             Log.i("Michael", "錯誤兔胚並沒有兩張")
             return mutableListOf()
         }
@@ -940,6 +941,7 @@ object PokerLogicTool {
            }
            if (myNum == POKER_2){
                list.addAll(pairList)
+               break
            }
            if (currentCardNum == myNum && currentCardType < myType){
                list.addAll(pairList)
@@ -995,7 +997,9 @@ object PokerLogicTool {
         userCardList: MutableList<CardData>,
         currentPlayCardDataList: MutableList<CardData>
     ): CardData? {
-        val singleCard = searchForSingleCard(userCardList)
+
+        val cardList = userCardList.toMutableList()
+        val singleCard = searchForSingleCard(cardList)
         singleCard.sortWith{ o1,o2->
             o1.cardValue - o2.cardValue
         }
