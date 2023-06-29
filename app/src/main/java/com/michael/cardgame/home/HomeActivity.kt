@@ -13,6 +13,7 @@ import com.michael.cardgame.R
 import com.michael.cardgame.base.BaseActivity
 import com.michael.cardgame.big_two.BigTwoActivity
 import com.michael.cardgame.databinding.ActivityHomeBinding
+import com.michael.cardgame.dialog.ChooseGameModeDialog
 import com.michael.cardgame.tool.FirebaseDAO
 import com.michael.cardgame.tool.SpeechTool
 
@@ -30,9 +31,20 @@ class HomeActivity : BaseActivity() {
         initView()
     }
 
+    override fun onStop() {
+        super.onStop()
+        viewModel.onStop()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
+    }
+
     private fun initView() {
         binding.ivBigTwo.setOnClickListener {
-            goToPage(BigTwoActivity::class.java)
+            viewModel.onBigTwoClickListener()
+
         }
         binding.tvLogout.setOnClickListener {
             Firebase.auth.signOut()
@@ -42,6 +54,13 @@ class HomeActivity : BaseActivity() {
     }
 
     private fun handleLiveData() {
+        viewModel.showBigTwoChooseGameModeDialogLiveData.observe(this){
+            val dialog = ChooseGameModeDialog.newInstance()
+            dialog.show(supportFragmentManager,"dialog")
+        }
+        viewModel.showOnlineUserCount.observe(this){
+            binding.tvOnlineUser.text = "在線人數 : $it 人"
+        }
         viewModel.showUserCashAmountLiveData.observe(this){
             binding.tvUserCash.text = it
         }

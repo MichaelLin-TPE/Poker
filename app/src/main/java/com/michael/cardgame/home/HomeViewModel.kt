@@ -12,10 +12,16 @@ import com.michael.cardgame.tool.UserDataTool
 class HomeViewModel(private val application: Application) : BaseViewModel(application) {
 
 
+    val showOnlineUserCount = MutableLiveData<Int>()
     val showUserDiamondCountLiveData = MutableLiveData<String>()
     val showUserCashAmountLiveData = MutableLiveData<String>()
     val showUserNameLiveData = MutableLiveData<String>()
     val showUserPhotoLiveData = MutableLiveData<Int>()
+    val showBigTwoChooseGameModeDialogLiveData = MutableLiveData<Boolean>()
+
+    fun onBigTwoClickListener() {
+        showBigTwoChooseGameModeDialogLiveData.value = true
+    }
 
     init {
         db.getLiveUserData(object : FirebaseDAO.OnFirebaseCatchUserDataListener{
@@ -33,8 +39,10 @@ class HomeViewModel(private val application: Application) : BaseViewModel(applic
             override fun onNeedToCreateUser() {
 
             }
-
         })
+        onCatchOnlineUsers{
+            showOnlineUserCount.value = it
+        }
 
     }
 

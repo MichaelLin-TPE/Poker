@@ -35,6 +35,7 @@ class BigTwoActivity : BaseActivity() {
 
     override fun onStop() {
         super.onStop()
+        Log.i("Poker","onStop")
         SoundTool.stopBackgroundMusic()
     }
 

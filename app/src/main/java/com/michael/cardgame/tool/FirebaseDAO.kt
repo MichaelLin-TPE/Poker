@@ -60,6 +60,47 @@ class FirebaseDAO {
             ?.addOnFailureListener { Log.i("Poker","updateCashAmountFail") }
     }
 
+    fun stopConnectFirebase() {
+        db?.collection("onlineUsers")
+            ?.document(UserDataTool.getEmail())
+            ?.update("isConnected",false)
+            ?.addOnSuccessListener { Log.i("Poker","updateCashAmountSuccessful")}
+            ?.addOnFailureListener { Log.i("Poker","updateCashAmountFail") }
+    }
+
+    fun startToConnectFirebase(){
+        val map = hashMapOf(
+            "email" to UserDataTool.getEmail(),
+            "isConnected" to true
+        )
+        db?.collection("onlineUsers")
+            ?.document(UserDataTool.getEmail())
+            ?.set(map,SetOptions.merge())
+    }
+
+    fun setOnCatchOnlineUsersListener(onCatchOnlineUsersListener: OnCatchOnlineUsersListener){
+        db?.collection("onlineUsers")
+            ?.addSnapshotListener { value, error ->
+                if (error != null){
+                    return@addSnapshotListener
+                }
+                if (value == null || value.isEmpty){
+                    return@addSnapshotListener
+                }
+                var userCount = 0
+                for (doc in value){
+                    Log.i("Poker","email : ${doc.getString("email")} , isConnected : ${doc.getBoolean("isConnected")}")
+                    if (doc.getBoolean("isConnected")!!){
+                        userCount ++
+                    }
+                }
+                onCatchOnlineUsersListener.onCatchOnlineUsersCount(userCount)
+            }
+    }
+
+    fun interface OnCatchOnlineUsersListener{
+        fun onCatchOnlineUsersCount(usersCount:Int)
+    }
 
     interface OnFirebaseCatchUserDataListener{
         fun onCatchUserData(value: DocumentSnapshot)

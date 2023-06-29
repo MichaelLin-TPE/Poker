@@ -20,7 +20,18 @@ open class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         SoundTool.initSoundPool(this)
+
     }
+
+    override fun onResume() {
+        super.onResume()
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+    }
+
 
     fun <T : ViewModel> getViewModel(viewModel: Class<T>): T {
         return ViewModelProvider(this, viewModelFactory)[viewModel]

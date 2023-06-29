@@ -149,6 +149,22 @@
             android:layout_height="wrap_content"/>
 
 
+        <com.michael.cardgame.custom.CardTextView
+            android:id="@+id/tv_online_user"
+            android:textSize="18sp"
+            tools:text="在線人數 : 50 人"
+            android:textColor="@color/white"
+            android:gravity="center|end"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginBottom="20dp"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
