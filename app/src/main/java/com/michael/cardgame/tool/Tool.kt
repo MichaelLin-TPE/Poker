@@ -34,6 +34,7 @@ import com.michael.cardgame.constants.Constants.STRAIGHT_FLUSH
 import com.michael.cardgame.constants.Constants.TWO_PAIR
 import com.weather.sunny.application.MyApplication
 import java.text.DecimalFormat
+import java.util.UUID
 
 object Tool {
 
@@ -191,6 +192,15 @@ object Tool {
             TWO_PAIR -> "兔胚"
             else -> "單張"
         }
+    }
+
+    fun getRandomEmail(): String {
+        val randId = UUID.randomUUID().toString()
+        return "$randId@customer.com"
+    }
+
+    fun getRandomPassword(): String {
+        return UUID.randomUUID().toString()
     }
 
 

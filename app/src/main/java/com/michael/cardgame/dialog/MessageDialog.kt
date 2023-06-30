@@ -26,27 +26,31 @@ import com.michael.cardgame.tool.Tool.convertDp
 import com.michael.cardgame.tool.UserDataTool
 import kotlin.math.abs
 
-class ChooseGameModeDialog : DialogFragment() {
+class MessageDialog : DialogFragment() {
 
     companion object {
-        fun newInstance(): ChooseGameModeDialog {
+        fun newInstance(title:String, content:String,confirmContent:String): MessageDialog {
             val args = Bundle()
-            val fragment = ChooseGameModeDialog()
+            args.putString("title",title)
+            args.putString("content",content)
+            args.putString("confirm",confirmContent)
+            val fragment = MessageDialog()
             fragment.arguments = args
             return fragment
         }
 
     }
 
-    private lateinit var onGameModeSelectedListener: OnGameModeSelectedListener
+    private lateinit var onMessageDialogItemClickListener: OnMessageDialogItemClickListener
 
-    fun setOnGameModeSelectedListener(onGameModeSelectedListener: OnGameModeSelectedListener){
-        this.onGameModeSelectedListener = onGameModeSelectedListener
+    fun setOnMessageDialogItemClickListener(onMessageDialogItemClickListener: OnMessageDialogItemClickListener){
+        this.onMessageDialogItemClickListener = onMessageDialogItemClickListener
     }
+
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val inflater = activity?.layoutInflater
-        val view = inflater?.inflate(R.layout.dialog_choose_game_mode_layout, null)
+        val view = inflater?.inflate(R.layout.dialog_msg_layout, null)
         initView(view!!)
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -54,35 +58,40 @@ class ChooseGameModeDialog : DialogFragment() {
         dialog.window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
         val window = dialog.window
         val wlp = window?.attributes
-        wlp?.width = 400.convertDp()
-        wlp?.height = 230.convertDp()
+        wlp?.width = 300.convertDp()
+        wlp?.height = 300.convertDp()
         window?.attributes = wlp
         return dialog
     }
 
     private fun initView(view: View) {
+        val title = arguments?.getString("title")
+        val content = arguments?.getString("content")
+        val confirm = arguments?.getString("confirm")
 
-        val ivSingle = view.findViewById<ImageView>(R.id.iv_single_play)
-        val ivOnLine = view.findViewById<ImageView>(R.id.iv_online_play)
+        val tvTitle = view.findViewById<TextView>(R.id.title)
+        val tvContent = view.findViewById<TextView>(R.id.tv_content)
+        val tvConfirm = view.findViewById<TextView>(R.id.postive_btn)
+        val tvCancel = view.findViewById<TextView>(R.id.cancel_btn)
 
-        ivSingle.setOnClickListener {
-            onGameModeSelectedListener.onSinglePlayer()
+        tvTitle.text = title
+        tvContent.text = content
+        tvConfirm.text = confirm
+
+        tvCancel.setOnClickListener {
             dismiss()
         }
 
-        ivOnLine.setOnClickListener {
-            onGameModeSelectedListener.onOnlinePlayer()
+        tvConfirm.setOnClickListener {
+            onMessageDialogItemClickListener.onConfirmClick()
             dismiss()
         }
 
 
     }
 
-    interface OnGameModeSelectedListener{
-        fun onSinglePlayer()
-        fun onOnlinePlayer()
+    fun interface OnMessageDialogItemClickListener{
+        fun onConfirmClick()
     }
-
-
 
 }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
@@ -20,6 +21,8 @@ import com.michael.cardgame.databinding.ActivityHomePageBinding
 import com.michael.cardgame.dialog.UserPhotoAndNameConfirmDialog
 import com.michael.cardgame.home.HomeActivity
 import com.michael.cardgame.tool.FirebaseDAO
+import com.michael.cardgame.tool.Tool
+import com.michael.cardgame.tool.UserDataTool
 import java.lang.Exception
 
 class LauncherActivity : BaseActivity() {
@@ -32,14 +35,21 @@ class LauncherActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
-        auth = Firebase.auth
+        checkLogin()
+    }
+
+    private fun checkLogin() {
         val currentUser = auth.currentUser
         if (currentUser != null){
             Log.i("Poker","已經是登入狀態了 email : ${currentUser.email}")
             binding.signInBtn.visibility = View.GONE
+            binding.customerLogin.visibility = View.GONE
             viewModel.onStartFlow(currentUser.email)
         }else{
             binding.signInBtn.visibility = View.VISIBLE
+            binding.customerLogin.visibility = View.VISIBLE
+
+            viewModel.checkIsCustomerLogin()
         }
     }
 
@@ -47,6 +57,7 @@ class LauncherActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this,R.layout.activity_home_page)
         viewModel = getViewModel(LauncherViewModel::class.java)
+        auth = Firebase.auth
         handleLiveData()
         initView()
     }
@@ -74,6 +85,9 @@ class LauncherActivity : BaseActivity() {
                     Log.i("Poker","signIn fail $it")
                 }
         }
+        binding.customerLogin.setOnClickListener {
+            viewModel.onShowWarningMsgDialog()
+        }
     }
 
     private fun setGooglePlusButtonText(signInButton: SignInButton){
@@ -99,10 +113,8 @@ class LauncherActivity : BaseActivity() {
                         auth.signInWithCredential(firebaseCredential)
                             .addOnCompleteListener(this){
                                 if (it.isSuccessful){
-                                    binding.signInBtn.visibility = View.GONE
-                                    auth = Firebase.auth
-                                    val currentUser = auth.currentUser
-                                    viewModel.onStartFlow(currentUser?.email)
+                                    UserDataTool.saveCustomerLogin(false)
+                                    checkLogin()
                                     Log.i("Poker","FirebaseAuth successful token $idToken")
                                 }else{
                                     Log.i("Poker","FirebaseAuth fail ${it.exception}")
@@ -134,6 +146,55 @@ class LauncherActivity : BaseActivity() {
             dialog.setOnSetUpUserDataListener{ name,photoId->
                 viewModel.onCatchUserData(name,photoId)
             }
+        }
+
+        viewModel.showWarningDialogLiveData.observe(this){
+            showMessageDialog(getString(R.string.warming),getString(R.string.customer_login_info),getString(R.string.login)){
+                viewModel.onMessageConfirmClickListener()
+            }
+        }
+
+        viewModel.startToDoCustomerCreateLiveData.observe(this){
+            if (UserDataTool.getUserPassword().isNotEmpty()){
+                UserDataTool.saveCustomerLogin(true)
+                checkLogin()
+                return@observe
+            }
+            val email = Tool.getRandomEmail()
+            val pwd = Tool.getRandomPassword()
+            auth.createUserWithEmailAndPassword(email,pwd)
+                .addOnCompleteListener {
+                    if (it.isSuccessful){
+                        Log.i("Poker","訪客登入成功")
+                        UserDataTool.saveUserPassword(pwd)
+                        UserDataTool.saveCustomerLogin(true)
+                        checkLogin()
+                    }else{
+                        Toast.makeText(
+                            this,
+                            "LoginFail ${it.exception}",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                        Log.i("Poker","CreateUser ${it.exception}")
+                    }
+                }
+        }
+
+        viewModel.startToDoCustomerLoginLiveData.observe(this){
+            Log.i("Poker","acct : ${it.first} , password : ${it.second}")
+            auth.signInWithEmailAndPassword(it.first,it.second)
+                .addOnCompleteListener {task->
+                    if (task.isSuccessful){
+                        checkLogin()
+                    }else{
+                        Toast.makeText(
+                            this,
+                            "LoginFail ${task.exception}",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                        Log.i("Poker","Login ${task.exception}")
+                    }
+                }
         }
     }
 }

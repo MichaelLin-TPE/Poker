@@ -17,6 +17,9 @@ class LauncherViewModel(private val application: Application) : BaseViewModel(ap
 
     val goToHomePageLiveData = MutableLiveData<Boolean>()
     val showSetUpNameAndPhotoLiveData = MutableLiveData<Boolean>()
+    val showWarningDialogLiveData = MutableLiveData<Boolean>()
+    val startToDoCustomerCreateLiveData = MutableLiveData<Boolean>()
+    val startToDoCustomerLoginLiveData = MutableLiveData<Pair<String,String>>()
     fun onCatchUserData(name: String, photoId: Int) {
         if (name.isEmpty()) {
             showErrorMsg("請輸入暱稱")
@@ -80,15 +83,22 @@ class LauncherViewModel(private val application: Application) : BaseViewModel(ap
             }
         })
 
+    }
 
-//        val userName = UserDataTool.getUserName()
-//        if (userName.isEmpty()){
-//
-//            showSetUpNameAndPhotoLiveData.value = true
-//
-//        }else{
+    fun onShowWarningMsgDialog() {
+        showWarningDialogLiveData.value = true
+    }
 
-//        }
+    fun onMessageConfirmClickListener() {
+        startToDoCustomerCreateLiveData.value = true
+    }
+
+    fun checkIsCustomerLogin() {
+        Log.i("Poker","isCustomerLogin : ${UserDataTool.isCustomerLogin()}")
+        if (UserDataTool.isCustomerLogin()){
+
+            startToDoCustomerLoginLiveData.value = Pair(UserDataTool.getEmail(),UserDataTool.getUserPassword())
+        }
     }
 
 

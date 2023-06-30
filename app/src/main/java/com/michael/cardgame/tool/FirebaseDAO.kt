@@ -1,19 +1,31 @@
 package com.michael.cardgame.tool
 
+import android.content.Intent
 import android.util.Log
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.ktx.Firebase
+import com.michael.cardgame.LauncherActivity
 
 class FirebaseDAO {
 
     private var db : FirebaseFirestore? = null
 
+    private var liveUserDataListenerRegistration : ListenerRegistration? = null
+    private var onlineUserDataListenerRegistration : ListenerRegistration? = null
+    
+    
     fun init(db:FirebaseFirestore){
         this.db = db
     }
 
     fun getUserData(email: String,onFirebaseCatchUserDataListener: OnFirebaseCatchUserDataListener) {
+        if (Firebase.auth.currentUser == null){
+            return
+        }
         db?.collection("users")
             ?.document(email)
             ?.get()
@@ -30,7 +42,10 @@ class FirebaseDAO {
     }
 
     fun getLiveUserData(onFirebaseCatchUserDataListener: OnFirebaseCatchUserDataListener){
-        db?.collection("users")
+        if (Firebase.auth.currentUser == null){
+            return
+        }
+        liveUserDataListenerRegistration = db?.collection("users")
             ?.document(UserDataTool.getEmail())
             ?.addSnapshotListener { value, error ->
                 if (error != null){
@@ -47,12 +62,18 @@ class FirebaseDAO {
 
 
     fun saveUserData(map: HashMap<String, Any>) {
+        if (Firebase.auth.currentUser == null){
+            return
+        }
         db?.collection("users")
             ?.document(UserDataTool.getEmail())
             ?.set(map, SetOptions.merge())
     }
 
     fun upDateMyCashAmount(userCashAmount: Int) {
+        if (Firebase.auth.currentUser == null){
+            return
+        }
         db?.collection("users")
             ?.document(UserDataTool.getEmail())
             ?.update("cashCount",userCashAmount)
@@ -61,6 +82,9 @@ class FirebaseDAO {
     }
 
     fun stopConnectFirebase() {
+        if (Firebase.auth.currentUser == null){
+            return
+        }
         db?.collection("onlineUsers")
             ?.document(UserDataTool.getEmail())
             ?.update("isConnected",false)
@@ -69,6 +93,9 @@ class FirebaseDAO {
     }
 
     fun startToConnectFirebase(){
+        if (Firebase.auth.currentUser == null){
+            return
+        }
         val map = hashMapOf(
             "email" to UserDataTool.getEmail(),
             "isConnected" to true
@@ -79,7 +106,10 @@ class FirebaseDAO {
     }
 
     fun setOnCatchOnlineUsersListener(onCatchOnlineUsersListener: OnCatchOnlineUsersListener){
-        db?.collection("onlineUsers")
+        if (Firebase.auth.currentUser == null){
+            return
+        }
+        onlineUserDataListenerRegistration =  db?.collection("onlineUsers")
             ?.addSnapshotListener { value, error ->
                 if (error != null){
                     return@addSnapshotListener
@@ -96,6 +126,33 @@ class FirebaseDAO {
                 }
                 onCatchOnlineUsersListener.onCatchOnlineUsersCount(userCount)
             }
+    }
+
+    fun logout(onLogoutFinishListener: OnLogoutFinishListener) {
+        db?.collection("onlineUsers")
+            ?.document(UserDataTool.getEmail())
+            ?.update("isConnected",false)
+            ?.addOnSuccessListener {
+                Log.i("Poker","updateCashAmountSuccessful")
+                if (liveUserDataListenerRegistration != null){
+                    liveUserDataListenerRegistration?.remove()
+                }
+                if (onlineUserDataListenerRegistration != null){
+                    onlineUserDataListenerRegistration?.remove()
+                }
+                Firebase.auth.signOut()
+                UserDataTool.saveCustomerLogin(false)
+                UserDataTool.saveEmail("")
+                UserDataTool.saveUserPassword("")
+                onLogoutFinishListener.onFinish()
+            }
+            ?.addOnFailureListener { Log.i("Poker","updateCashAmountFail") }
+
+
+    }
+
+    fun interface OnLogoutFinishListener{
+        fun onFinish()
     }
 
     fun interface OnCatchOnlineUsersListener{

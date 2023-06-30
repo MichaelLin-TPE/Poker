@@ -19,6 +19,20 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent" />
 
+        <com.michael.cardgame.custom.CardTextView
+            android:id="@+id/customer_login"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintBottom_toTopOf="@id/sign_in_btn"
+            android:layout_marginBottom="5dp"
+            android:text="@string/customer_login"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:background="@drawable/customer_login_bg"
+            android:layout_width="120dp"
+            android:layout_height="40dp"/>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

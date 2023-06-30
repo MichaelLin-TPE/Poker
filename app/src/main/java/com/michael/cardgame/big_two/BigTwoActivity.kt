@@ -35,12 +35,14 @@ class BigTwoActivity : BaseActivity() {
 
     override fun onStop() {
         super.onStop()
+        viewModel.onStop()
         Log.i("Poker","onStop")
         SoundTool.stopBackgroundMusic()
     }
 
     override fun onResume() {
         super.onResume()
+        viewModel.onResume()
         SoundTool.playBackgroundMusic(this)
     }
 
@@ -298,6 +300,8 @@ class BigTwoActivity : BaseActivity() {
         }
 
     }
+
+
 
     private fun disableContent(tvContent: TextView) {
         Handler(Looper.getMainLooper()).postDelayed({

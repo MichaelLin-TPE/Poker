@@ -1,6 +1,7 @@
 package com.michael.cardgame.tool
 
 import com.michael.cardgame.R
+import java.util.function.BinaryOperator
 
 object UserDataTool {
 
@@ -69,6 +70,15 @@ object UserDataTool {
     fun saveDiamondCount(diamondCount: Int) {
         CacheTool.putInt("user_diamond_count",diamondCount)
     }
+
+    fun saveUserPassword(pwd: String) {
+        CacheTool.putString("pwd",pwd)
+    }
+    fun getUserPassword():String = CacheTool.getString("pwd","")
+    fun saveCustomerLogin(isCustomerLogin: Boolean) {
+        CacheTool.putBoolean("isCustomerLogin",isCustomerLogin)
+    }
+    fun isCustomerLogin() :Boolean = CacheTool.getBoolean("isCustomerLogin",false)
 
 
 }

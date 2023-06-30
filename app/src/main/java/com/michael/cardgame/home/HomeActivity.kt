@@ -1,5 +1,6 @@
 package com.michael.cardgame.home
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +17,7 @@ import com.michael.cardgame.databinding.ActivityHomeBinding
 import com.michael.cardgame.dialog.ChooseGameModeDialog
 import com.michael.cardgame.tool.FirebaseDAO
 import com.michael.cardgame.tool.SpeechTool
+import com.michael.cardgame.tool.UserDataTool
 
 class HomeActivity : BaseActivity() {
 
@@ -47,16 +49,27 @@ class HomeActivity : BaseActivity() {
 
         }
         binding.tvLogout.setOnClickListener {
-            Firebase.auth.signOut()
-            goToPage(LauncherActivity::class.java)
-            finish()
+            viewModel.onLogoutClickListener()
         }
     }
 
     private fun handleLiveData() {
+        viewModel.goToLauncherPageLiveData.observe(this){
+            goToPage(LauncherActivity::class.java)
+            finish()
+        }
         viewModel.showBigTwoChooseGameModeDialogLiveData.observe(this){
             val dialog = ChooseGameModeDialog.newInstance()
             dialog.show(supportFragmentManager,"dialog")
+            dialog.setOnGameModeSelectedListener(object : ChooseGameModeDialog.OnGameModeSelectedListener{
+                override fun onSinglePlayer() {
+                    goToPage(BigTwoActivity::class.java)
+                }
+
+                override fun onOnlinePlayer() {
+
+                }
+            })
         }
         viewModel.showOnlineUserCount.observe(this){
             binding.tvOnlineUser.text = "在線人數 : $it 人"

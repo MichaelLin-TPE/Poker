@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.michael.cardgame.dialog.MessageDialog
 import com.michael.cardgame.tool.FirebaseDAO
 import com.michael.cardgame.tool.SoundTool
 
@@ -32,6 +33,13 @@ open class BaseActivity : AppCompatActivity() {
         super.onStop()
     }
 
+    fun showMessageDialog(title:String,content:String,confirm:String,onMessageDialogItemClickListener: MessageDialog.OnMessageDialogItemClickListener){
+        val dialog = MessageDialog.newInstance(title,content,confirm)
+        dialog.show(supportFragmentManager,"dialog")
+        dialog.setOnMessageDialogItemClickListener{
+            onMessageDialogItemClickListener.onConfirmClick()
+        }
+    }
 
     fun <T : ViewModel> getViewModel(viewModel: Class<T>): T {
         return ViewModelProvider(this, viewModelFactory)[viewModel]

@@ -2,6 +2,7 @@ package com.michael.cardgame.home
 
 import android.app.Application
 import android.service.autofill.UserData
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.DocumentSnapshot
 import com.michael.cardgame.base.BaseViewModel
@@ -18,10 +19,18 @@ class HomeViewModel(private val application: Application) : BaseViewModel(applic
     val showUserNameLiveData = MutableLiveData<String>()
     val showUserPhotoLiveData = MutableLiveData<Int>()
     val showBigTwoChooseGameModeDialogLiveData = MutableLiveData<Boolean>()
+    val goToLauncherPageLiveData = MutableLiveData<Boolean>()
 
     fun onBigTwoClickListener() {
         showBigTwoChooseGameModeDialogLiveData.value = true
     }
+
+    fun onLogoutClickListener() {
+        db.logout{
+            goToLauncherPageLiveData.value = true
+        }
+    }
+
 
     init {
         db.getLiveUserData(object : FirebaseDAO.OnFirebaseCatchUserDataListener{
@@ -33,6 +42,7 @@ class HomeViewModel(private val application: Application) : BaseViewModel(applic
             }
 
             override fun onError(errorMsg: String) {
+                Log.i("Poker","onCatchUserData fail : $errorMsg")
                 showErrorMsg(errorMsg)
             }
 
