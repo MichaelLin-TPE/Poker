@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ic_main_bg"
+        tools:context=".LauncherActivity">
+
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/sign_in_btn"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <com.michael.cardgame.custom.CardTextView
+            android:id="@+id/customer_login"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintBottom_toTopOf="@id/sign_in_btn"
+            android:layout_marginBottom="5dp"
+            android:text="@string/customer_login"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:background="@drawable/customer_login_bg"
+            android:layout_width="120dp"
+            android:layout_height="40dp"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

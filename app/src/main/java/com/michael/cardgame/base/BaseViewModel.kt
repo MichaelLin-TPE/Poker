@@ -18,6 +18,7 @@ abstract class BaseViewModel(private val application: Application) : AndroidView
         db.init(Firebase.firestore)
     }
 
+
     fun onStop() {
         db.stopConnectFirebase()
     }

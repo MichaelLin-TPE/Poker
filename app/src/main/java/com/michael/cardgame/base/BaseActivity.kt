@@ -24,6 +24,8 @@ open class BaseActivity : AppCompatActivity() {
 
     }
 
+
+
     override fun onResume() {
         super.onResume()
 

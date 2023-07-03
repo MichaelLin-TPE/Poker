@@ -15,6 +15,7 @@ import com.michael.cardgame.base.BaseActivity
 import com.michael.cardgame.big_two.BigTwoActivity
 import com.michael.cardgame.databinding.ActivityHomeBinding
 import com.michael.cardgame.dialog.ChooseGameModeDialog
+import com.michael.cardgame.lobby.OnlineGameLobbyActivity
 import com.michael.cardgame.tool.FirebaseDAO
 import com.michael.cardgame.tool.SpeechTool
 import com.michael.cardgame.tool.UserDataTool
@@ -67,7 +68,7 @@ class HomeActivity : BaseActivity() {
                 }
 
                 override fun onOnlinePlayer() {
-
+                    goToPage(OnlineGameLobbyActivity::class.java)
                 }
             })
         }

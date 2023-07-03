@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ic_poker_bg"
+        tools:context=".home.HomeActivity">
+        <com.michael.cardgame.custom.CardTextView
+            android:id="@+id/tv_user_cash"
+            android:textSize="18sp"
+            tools:text="$0"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/user_amount_bg"
+            android:layout_marginTop="20dp"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/iv_user_cash"
+            android:contentDescription="@null"
+            android:layout_marginEnd="15dp"
+            app:layout_constraintTop_toTopOf="@id/tv_user_cash"
+            app:layout_constraintBottom_toBottomOf="@id/tv_user_cash"
+            app:layout_constraintRight_toLeftOf="@id/tv_user_cash"
+            android:src="@drawable/ic_cash"
+            android:scaleType="fitXY"
+            android:layout_width="35dp"
+            android:layout_height="35dp"/>
+
+        <com.michael.cardgame.custom.CardTextView
+            android:id="@+id/tv_user_diamond"
+            android:textSize="18sp"
+            tools:text="0"
+            android:gravity="center|end"
+            app:layout_constraintRight_toLeftOf="@id/iv_user_cash"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/user_amount_bg"
+            android:layout_marginTop="20dp"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:id="@+id/iv_user_diamond"
+            android:contentDescription="@null"
+            android:layout_marginEnd="15dp"
+            app:layout_constraintTop_toTopOf="@id/tv_user_diamond"
+            app:layout_constraintBottom_toBottomOf="@id/tv_user_diamond"
+            app:layout_constraintRight_toLeftOf="@id/tv_user_diamond"
+            android:src="@drawable/ic_user_diamond"
+            android:scaleType="fitXY"
+            android:layout_width="35dp"
+            android:layout_height="35dp"/>
+
+        <ImageView
+            android:id="@+id/iv_diamond_add_btn"
+            android:src="@drawable/ic_add_button"
+            app:layout_constraintTop_toTopOf="@id/iv_user_diamond"
+            app:layout_constraintBottom_toTopOf="@id/iv_user_diamond"
+            app:layout_constraintRight_toRightOf="@id/iv_user_diamond"
+            app:layout_constraintLeft_toRightOf="@id/iv_user_diamond"
+            android:layout_width="15dp"
+            android:layout_height="15dp"/>
+        <ImageView
+            android:id="@+id/iv_cash_add_btn"
+            android:src="@drawable/ic_add_button"
+            app:layout_constraintTop_toTopOf="@id/iv_user_cash"
+            app:layout_constraintBottom_toTopOf="@id/iv_user_cash"
+            app:layout_constraintRight_toRightOf="@id/iv_user_cash"
+            app:layout_constraintLeft_toRightOf="@id/iv_user_cash"
+            android:layout_width="15dp"
+            android:layout_height="15dp"/>
+        
+
+        <ImageView
+            android:id="@+id/iv_user_photo"
+            android:contentDescription="@null"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintTop_toTopOf="@id/tv_user_diamond"
+            app:layout_constraintBottom_toBottomOf="@id/tv_user_diamond"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginStart="20dp"
+            android:src="@drawable/ic_boy"
+            android:scaleType="fitXY"
+            android:layout_width="35dp"
+            android:layout_height="35dp"/>
+
+        <com.michael.cardgame.custom.CardTextView
+            android:id="@+id/tv_user_name"
+            android:textSize="18sp"
+            tools:text="Michael"
+            app:layout_constraintLeft_toRightOf="@id/iv_user_photo"
+            app:layout_constraintTop_toTopOf="@id/iv_user_photo"
+            app:layout_constraintBottom_toBottomOf="@id/iv_user_photo"
+            android:layout_marginStart="5dp"
+            android:background="@drawable/user_amount_bg"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+        <ImageView
+            android:id="@+id/iv_big_two"
+            app:layout_constraintTop_toBottomOf="@id/iv_user_photo"
+            android:layout_marginTop="50dp"
+            android:scaleType="fitXY"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginStart="20dp"
+            android:src="@drawable/ic_big_two_enterance"
+            android:layout_width="200dp"
+            android:layout_height="150dp"/>
+
+
+        <com.michael.cardgame.custom.CardTextView
+            android:id="@+id/tv_big_two"
+            android:textSize="25sp"
+            android:text="@string/big_two"
+            app:layout_constraintLeft_toLeftOf="@id/iv_big_two"
+            app:layout_constraintRight_toRightOf="@id/iv_big_two"
+            app:layout_constraintTop_toBottomOf="@id/iv_big_two"
+            android:textColor="@color/white"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+        <com.michael.cardgame.custom.CardTextView
+            android:id="@+id/tv_logout"
+            android:textSize="18sp"
+            android:text="@string/logout"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/user_amount_bg"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+        <com.michael.cardgame.custom.CardTextView
+            android:id="@+id/tv_online_user"
+            android:textSize="18sp"
+            tools:text="在線人數 : 50 人"
+            android:textColor="@color/white"
+            android:gravity="center|end"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginBottom="20dp"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -18,4 +18,11 @@
     <string name="login">登入</string>
     <string name="customer_login_info">請注意,你現在選擇的是訪客登入,此紀錄將只會限制在此手機,為了防止你的資料流失,請你選擇其他的登入方式,若堅持要以訪客的方式登入,請勿將此APP卸載或是清除記憶體(卸載或清除記憶體,您的紀錄將不會再存在)</string>
     <string name="game_lobby">遊戲大廳</string>
+    <string name="room_name">輸入房間名稱</string>
+    <string name="create_game">開局</string>
+    <string name="betting_value">一張多大</string>
+    <string name="input_one_to_thousand">輸入$100~$1000</string>
+    <string name="send">發送</string>
+    <string name="say_something">說點甚麼吧?</string>
+    <string name="join">加入</string>
 </resources>

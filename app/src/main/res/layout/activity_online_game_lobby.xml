@@ -132,6 +132,28 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+        <ImageView
+            android:id="@+id/ic_create_game"
+            app:layout_constraintTop_toBottomOf="@id/iv_diamond"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/line"
+            app:layout_constraintBottom_toTopOf="@id/ic_quick_join"
+            android:src="@drawable/ic_create_game"
+            android:layout_width="0dp"
+            android:layout_height="0dp"/>
+
+        <ImageView
+            android:id="@+id/ic_quick_join"
+            app:layout_constraintTop_toBottomOf="@id/ic_create_game"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/line"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/ic_join_game"
+            android:layout_width="0dp"
+            android:layout_height="0dp"/>
+
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
