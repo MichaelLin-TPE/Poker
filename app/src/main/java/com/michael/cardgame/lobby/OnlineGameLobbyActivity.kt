@@ -71,7 +71,7 @@ class OnlineGameLobbyActivity : BaseActivity() {
         }
 
         binding.icQuickJoin.setOnClickListener {
-
+            viewModel.onQuickJoinButtonClickListener()
         }
 
 

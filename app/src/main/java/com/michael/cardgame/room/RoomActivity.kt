@@ -37,6 +37,12 @@ class RoomActivity : BaseActivity() {
         viewModel.finishPageLiveData.observe(this){
             finish()
         }
+        viewModel.setReadyButtonLiveData.observe(this){
+            binding.readyBtn.text = it
+        }
+        viewModel.showBettingValueLiveData.observe(this){
+            binding.tvBettingValue.text = it
+        }
     }
 
     private fun initView() {
@@ -48,6 +54,9 @@ class RoomActivity : BaseActivity() {
             val msg = binding.edMsg.text.toString()
             viewModel.onMessageSendClickListener(msg)
             binding.edMsg.setText("")
+        }
+        binding.readyBtn.setOnClickListener {
+            viewModel.onReadyButtonClickListener()
         }
     }
 }

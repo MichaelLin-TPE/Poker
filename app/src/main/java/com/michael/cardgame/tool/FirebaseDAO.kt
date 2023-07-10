@@ -194,7 +194,7 @@ class FirebaseDAO {
 
     private fun getCurrentUserList(): MutableList<UserData> {
         val list = mutableListOf<UserData>()
-        list.add(UserData(UserDataTool.getEmail(),UserDataTool.getUserName(),UserDataTool.getUserPhoto()))
+        list.add(UserData(UserDataTool.getEmail(),UserDataTool.getUserName(),UserDataTool.getUserPhoto(),false))
         return list
     }
 
@@ -333,7 +333,6 @@ class FirebaseDAO {
 
     fun updateRoomUserList(key: String, userList: MutableList<UserData>,callback: () -> Unit) {
         Log.i("Poker","key $key , userList : ${Gson().toJson(userList)}")
-        userList.add(UserData(UserDataTool.getEmail(),UserDataTool.getUserName(),UserDataTool.getUserPhoto()))
         val json = Gson().toJson(userList)
         db?.collection("gameRooms")
             ?.document(key)
@@ -345,15 +344,24 @@ class FirebaseDAO {
             ?.addOnFailureListener { Log.i("Poker","updateRoomFail") }
     }
 
-    fun removeRoomUserList(key: String, userList: MutableList<UserData>,callback: () -> Unit) {
-        Log.i("Poker","key $key , userList : ${Gson().toJson(userList)}")
-        val json = Gson().toJson(userList)
+    fun updateAcceptList(key: String, acceptList: MutableList<AcceptData>) {
+        val json = Gson().toJson(acceptList)
         db?.collection("gameRooms")
             ?.document(key)
-            ?.update("usersList",json)
+            ?.update("acceptList",json)
             ?.addOnSuccessListener {
                 Log.i("Poker","updateRoomSuccessful")
-                callback()
+
+            }
+            ?.addOnFailureListener { Log.i("Poker","updateRoomFail") }
+    }
+
+    fun updateRoomBoss(key: String, email: String) {
+        db?.collection("gameRooms")
+            ?.document(key)
+            ?.update("roomBoss",email)
+            ?.addOnSuccessListener {
+                Log.i("Poker","updateRoomSuccessful")
             }
             ?.addOnFailureListener { Log.i("Poker","updateRoomFail") }
     }

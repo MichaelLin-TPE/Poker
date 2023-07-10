@@ -8,6 +8,17 @@
     android:layout_height="wrap_content">
 
     <com.michael.cardgame.custom.CardTextView
+        android:id="@+id/system_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="Michael 說:"
+        android:textSize="14sp"
+        tools:visibility="invisible"
+        android:textColor="@color/yellow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <com.michael.cardgame.custom.CardTextView
         android:id="@+id/user_name"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

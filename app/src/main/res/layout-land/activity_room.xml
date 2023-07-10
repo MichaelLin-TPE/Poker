@@ -115,6 +115,35 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+        <com.michael.cardgame.custom.CardTextView
+            android:id="@+id/ready_btn"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/chat_view"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/i_am_ready"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:background="@drawable/customer_login_bg"
+            android:layout_width="0dp"
+            android:layout_height="40dp"/>
+
+        <com.michael.cardgame.custom.CardTextView
+            android:id="@+id/tv_betting_value"
+            app:layout_constraintTop_toBottomOf="@id/line"
+            app:layout_constraintLeft_toRightOf="@id/center_line"
+            android:layout_marginStart="10dp"
+            tools:text="一張$1000"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"/>
+
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

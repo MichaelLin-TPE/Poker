@@ -25,4 +25,6 @@
     <string name="send">發送</string>
     <string name="say_something">說點甚麼吧?</string>
     <string name="join">加入</string>
+    <string name="room_boss">房主</string>
+    <string name="i_am_ready">我準備好了</string>
 </resources>
